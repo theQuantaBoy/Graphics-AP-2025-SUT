@@ -3,16 +3,25 @@ package com.ap_graphics.view;
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.RegisterMenuController;
 import com.ap_graphics.model.Result;
+import com.ap_graphics.model.enums.Avatar;
+import com.ap_graphics.model.enums.SecurityQuestionOptions;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+
+import java.util.Random;
+import java.util.function.Consumer;
 
 public class RegisterMenuScreen implements Screen
 {
@@ -22,8 +31,10 @@ public class RegisterMenuScreen implements Screen
     private final RegisterMenuController controller = new RegisterMenuController();
 
     private final TextField nameField, usernameField, passwordField;
-    private final Label errorLabel;
     private final Table table;
+
+    private Image avatarImage;
+    private int avatarIndex = (new Random()).nextInt(Avatar.values().length);
 
     public RegisterMenuScreen(Skin skin)
     {
@@ -33,43 +44,58 @@ public class RegisterMenuScreen implements Screen
         table = new Table();
         table.setFillParent(true);
         table.center();
-        table.defaults().pad(10).width(280);
+        table.defaults().pad(8);
 
         // Title
         Label title = new Label("Sign Up", skin, "title");
         title.setFontScale(1.3f);
-        table.add(title).colspan(2).center().padBottom(25).row();
+        table.add(title).colspan(2).center().padBottom(20).row();
 
-        // Avatar selector placeholder (you can replace with real avatar UI later)
-        Image avatarFrame = new Image(skin.getDrawable("window")); // You need a "window" or frame in your skin
-        avatarFrame.setSize(80, 80);
-        table.add().colspan(2).height(10).row(); // spacing
-        table.add(new Label(" ", skin)).width(50);
-        table.add(avatarFrame).width(80).height(80).center().row();
+        // Layout: formTable = form left + avatar right
+        Table formTable = new Table();
+        formTable.defaults().pad(6);
 
-        // Name
-        table.add(new Label("Name", skin)).left();
+        // ✅ Form Fields (left)
+        Table fieldTable = new Table();
+        fieldTable.defaults().pad(4).left();
+
+        fieldTable.add(new Label("Name", skin)).row();
         nameField = new TextField("", skin);
-        table.add(nameField).left().row();
+        fieldTable.add(nameField).width(200).row();
 
-        // Username
-        table.add(new Label("Username", skin)).left();
+        fieldTable.add(new Label("Username", skin)).row();
         usernameField = new TextField("", skin);
-        table.add(usernameField).left().row();
+        fieldTable.add(usernameField).width(200).row();
 
-        // Password
-        table.add(new Label("Password", skin)).left();
+        fieldTable.add(new Label("Password", skin)).row();
         passwordField = new TextField("", skin);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
-        table.add(passwordField).left().row();
+        fieldTable.add(passwordField).width(200).row();
 
-        // Error label (for validation)
-        errorLabel = new Label("", skin);
-        errorLabel.setColor(Color.RED);
-        table.add(errorLabel).colspan(2).left().row();
+        // ✅ Avatar Table (right)
+        Table avatarTable = new Table();
+        avatarImage = new Image(new Texture(Gdx.files.internal(Avatar.getAvatar(avatarIndex).getPath())));
+        avatarImage.setSize(240, 240);
+        avatarTable.add(avatarImage).size(240, 240).center().row();
 
-        // Register button
+        Label avatarName = new Label(Avatar.getAvatar(avatarIndex).getName(), skin);
+        avatarTable.add(avatarName).center().padTop(4).row();
+
+        TextButton leftButton = new TextButton("<", skin);
+        TextButton rightButton = new TextButton(">", skin);
+        Table avatarNav = new Table();
+        avatarNav.add(leftButton).padRight(5);
+        avatarNav.add(rightButton).padLeft(5);
+        avatarTable.add(avatarNav).center().padTop(4);
+
+        // Add to formTable (left: fields, right: avatar)
+        formTable.add(fieldTable).top().padRight(40);
+        formTable.add(avatarTable).top();
+
+        table.add(formTable).center().row();
+
+        // ✅ Sign Up Button
         TextButton registerButton = new TextButton("Sign Up", skin);
         registerButton.addListener(new ClickListener()
         {
@@ -82,36 +108,76 @@ public class RegisterMenuScreen implements Screen
 
                 if (name.isEmpty() || username.isEmpty() || password.isEmpty())
                 {
-                    errorLabel.setText("All fields are required!");
+                    showDialog("All fields are required!");
                     return;
                 }
 
-                Result result = controller.onRegister(username, password, name);
-                if (result.isSuccessful())
+                showSecurityQuestionDialog(selectedOption ->
                 {
-                    app.setScreen(new LoginMenuScreen(skin));
-                } else
-                {
-                    errorLabel.setText(result.toString());
-                }
+                    Result result = controller.onRegister(username, password, name, avatarIndex, selectedOption);
+
+                    if (result.isSuccessful())
+                    {
+                        app.setScreen(new LoginMenuScreen(skin));
+                    } else
+                    {
+
+                    }
+                });
             }
         });
+        table.add(registerButton).colspan(2).center().padTop(20).row();
 
-        // Play as guest button (optional)
+        // ✅ Guest Login Button
         TextButton guestButton = new TextButton("Play as Guest", skin);
         guestButton.addListener(new ClickListener()
         {
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                // TODO: Implement guest login logic
+                showDialog("Guest login not implemented yet.");
+            }
+        });
+        table.add(guestButton).colspan(2).center().padTop(6).row();
+
+        // ✅ Avatar navigation logic
+        leftButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                avatarIndex = (avatarIndex + Avatar.values().length - 1) % Avatar.values().length;
+                updateAvatarDisplay(avatarName);
             }
         });
 
-        table.add(registerButton).colspan(2).center().padTop(16).row();
-        table.add(guestButton).colspan(2).center().padTop(4);
+        rightButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                avatarIndex = (avatarIndex + 1) % Avatar.values().length;
+                updateAvatarDisplay(avatarName);
+            }
+        });
 
         stage.addActor(table);
+    }
+
+    private void updateAvatarDisplay(Label avatarName)
+    {
+        Texture texture = new Texture(Gdx.files.internal(Avatar.getAvatar(avatarIndex).getPath()));
+        avatarImage.setDrawable(new TextureRegionDrawable(new TextureRegion(texture)));
+        avatarImage.setSize(240, 240);
+        avatarName.setText(Avatar.getAvatar(avatarIndex).getName());
+    }
+
+    private void showDialog(String message)
+    {
+        Dialog dialog = new Dialog("Oops!", skin);
+        dialog.text(message);
+        dialog.button("OK");
+        dialog.show(stage);
     }
 
     @Override
@@ -123,7 +189,6 @@ public class RegisterMenuScreen implements Screen
     @Override
     public void render(float delta)
     {
-        // Set background color
         Gdx.gl.glClearColor(0.0588f, 0.3882f, 0.3098f, 1f); // #0f634f
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -138,17 +203,61 @@ public class RegisterMenuScreen implements Screen
     }
 
     @Override
-    public void pause() { }
+    public void pause() {}
 
     @Override
-    public void resume() { }
+    public void resume() {}
 
     @Override
-    public void hide() { }
+    public void hide() {}
 
     @Override
     public void dispose()
     {
         stage.dispose();
     }
+
+    private void showSecurityQuestionDialog(Consumer<SecurityQuestionOptions> onChoiceSelected)
+    {
+        Dialog dialog = new Dialog("Security Question", skin);
+
+        Table content = new Table();
+        content.defaults().pad(12);
+
+        Label questionLabel = new Label("Which one would you rather have?", skin);
+        content.add(questionLabel).colspan(2).center().padBottom(20).row();
+
+        for (SecurityQuestionOptions option : SecurityQuestionOptions.values())
+        {
+            Texture texture = new Texture(Gdx.files.internal(option.getPath()));
+            Image image = new Image(texture);
+            image.invalidateHierarchy();
+
+            Label label = new Label(option.getName(), skin);
+
+            TextButton button = new TextButton("Choose", skin);
+            button.addListener(new ClickListener()
+            {
+                @Override
+                public void clicked(InputEvent event, float x, float y)
+                {
+                    dialog.hide();
+                    onChoiceSelected.accept(option);
+                }
+            });
+
+            VerticalGroup group = new VerticalGroup();
+            group.space(6);
+            group.addActor(image);
+            group.addActor(label);
+            group.addActor(button);
+            group.align(Align.center);
+
+            content.add(group).pad(10);
+        }
+
+        dialog.getContentTable().add(content).center();
+        dialog.show(stage);
+    }
+
 }

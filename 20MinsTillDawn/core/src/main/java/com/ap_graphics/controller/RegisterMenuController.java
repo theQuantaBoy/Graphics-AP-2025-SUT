@@ -3,6 +3,8 @@ package com.ap_graphics.controller;
 import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.Result;
+import com.ap_graphics.model.enums.Avatar;
+import com.ap_graphics.model.enums.SecurityQuestionOptions;
 import com.ap_graphics.view.RegisterMenuScreen;
 
 import java.util.Map;
@@ -16,7 +18,7 @@ public class RegisterMenuController
         this.view = view;
     }
 
-    public Result onRegister(String username, String password, String name)
+    public Result onRegister(String username, String password, String name, int avatarId, SecurityQuestionOptions option)
     {
         if (username.isEmpty())
         {
@@ -64,7 +66,7 @@ public class RegisterMenuController
             return new Result(false, "name can only contain english letters");
         }
 
-        Player player = new Player(name, username, password, true);
+        Player player = new Player(name, username, password, true, Avatar.getAvatar(avatarId));
         App.getPlayers().add(player);
         return new Result(true, "success");
     }

@@ -1,17 +1,21 @@
 package com.ap_graphics.model;
 
+import com.ap_graphics.model.enums.Avatar;
+
 public class Player
 {
     private String nickname;
     private String username;
     private String password;
+    private Avatar avatar;
     private boolean securityQuestionAnswer;
 
-    public Player(String nickname, String username, String password, boolean securityQuestionAnswer)
+    public Player(String nickname, String username, String password, boolean securityQuestionAnswer, Avatar avatar)
     {
         this.nickname = nickname;
         this.username = username;
         this.password = password;
+        this.avatar = avatar;
         this.securityQuestionAnswer = securityQuestionAnswer;
     }
 

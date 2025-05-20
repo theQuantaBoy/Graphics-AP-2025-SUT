@@ -13,6 +13,7 @@ public class TillDawn extends com.badlogic.gdx.Game
     @Override
     public void create()
     {
+        GameAssetManager.getGameAssetManager().loadAllAssets();
         game = this;
         batch = new SpriteBatch();
         getGame().setScreen(new RegisterMenuScreen(GameAssetManager.getGameAssetManager().getSkin()));
