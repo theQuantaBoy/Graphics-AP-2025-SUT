@@ -3,21 +3,20 @@ package com.ap_graphics;
 import com.ap_graphics.controller.RegisterMenuController;
 import com.ap_graphics.model.GameAssetManager;
 import com.ap_graphics.view.RegisterMenuScreen;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class Main extends Game
+public class Game extends com.badlogic.gdx.Game
 {
-    private static Main main;
+    private static Game game;
     private static SpriteBatch batch;
 
     @Override
     public void create()
     {
-        main = this;
+        game = this;
         batch = new SpriteBatch();
-        getMain().setScreen(new RegisterMenuScreen(new RegisterMenuController(), GameAssetManager.getGameAssetManager().getSkin()));
+        getGame().setScreen(new RegisterMenuScreen(GameAssetManager.getGameAssetManager().getSkin()));
     }
 
     @Override
@@ -32,9 +31,9 @@ public class Main extends Game
         super.render();
     }
 
-    public static Main getMain()
+    public static Game getGame()
     {
-        return main;
+        return game;
     }
 
     public static SpriteBatch getBatch()

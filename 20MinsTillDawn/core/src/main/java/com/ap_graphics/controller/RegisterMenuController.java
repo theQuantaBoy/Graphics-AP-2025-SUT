@@ -2,6 +2,7 @@ package com.ap_graphics.controller;
 
 import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
+import com.ap_graphics.model.Result;
 import com.ap_graphics.view.RegisterMenuScreen;
 
 import java.util.Map;
@@ -15,56 +16,57 @@ public class RegisterMenuController
         this.view = view;
     }
 
-    public String onRegister(String username, String password, String name)
+    public Result onRegister(String username, String password, String name)
     {
         if (username.isEmpty())
         {
-            return "please enter a username";
+            return new Result(false, "please enter a username");
         }
 
         if (password.isEmpty())
         {
-            return "password can not be empty";
+            return new Result(false, "password can not be empty");
         }
 
         if (name.isEmpty())
         {
-            return "please enter a name";
+            return new Result(false, "please enter a name");
         }
 
         Player other = App.findPlayer(username);
         if (other != null)
         {
-            return "this username is already taken";
+            return new Result(false, "this username is already taken");
         }
 
         if (password.length() < 8)
         {
-            return "password must be at least 8 characters";
+            return new Result(false, "password must be at least 8 characters");
         }
 
         if (!hasCapitalLetter(password))
         {
-            return "password must have at least one capital letter";
+            return new Result(false, "password must have at least one capital letter");
         }
 
         if (!hasDigit(password))
         {
-            return "password must have at least one digit";
+            return new Result(false, "password must have at least one digit");
         }
 
         if (!hasSpecialCharacter(password))
         {
-            return "password must have at least one special character";
+            return new Result(false, "password must have at least one special character");
         }
 
         if (!isNameValid(name))
         {
-            return "name can only contain english letters";
+            return new Result(false, "name can only contain english letters");
         }
 
         Player player = new Player(name, username, password, true);
-        return "success";
+        App.getPlayers().add(player);
+        return new Result(true, "success");
     }
 
     private boolean hasSpecialCharacter(String password)

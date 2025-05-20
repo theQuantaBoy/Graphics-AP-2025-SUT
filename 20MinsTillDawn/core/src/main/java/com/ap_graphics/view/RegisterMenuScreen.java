@@ -1,6 +1,8 @@
 package com.ap_graphics.view;
 
+import com.ap_graphics.Game;
 import com.ap_graphics.controller.RegisterMenuController;
+import com.ap_graphics.model.Result;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,11 +19,11 @@ public class RegisterMenuScreen implements Screen
     private final Skin skin;
     private final TextField usernameField, passwordField, nameField;
     private final Label errorLabel;
-    private RegisterMenuController controller;
+    private Dialog dialog;
+    private RegisterMenuController controller = new RegisterMenuController();
 
-    public RegisterMenuScreen(RegisterMenuController controller, Skin skin)
+    public RegisterMenuScreen(Skin skin)
     {
-        this.controller = controller;
         this.skin = skin;
         this.stage = new Stage(new ScreenViewport());
 
@@ -57,8 +59,26 @@ public class RegisterMenuScreen implements Screen
         {
             public void clicked(InputEvent event, float x, float y)
             {
-                String result = controller.onRegister(usernameField.getText(), passwordField.getText(), nameField.getText());
-                errorLabel.setText(result);
+                Result result = controller.onRegister(usernameField.getText(), passwordField.getText(), nameField.getText());
+
+                if (result.isSuccessful())
+                {
+                    Dialog dialog = new Dialog("Success", skin) {
+                        @Override
+                        protected void result(Object object) {
+                            Game.getGame().setScreen(new LoginMenuScreen(skin));
+                        }
+                    };
+                    dialog.text(result.toString());
+                    dialog.button("OK",true);
+                    dialog.show(stage);
+                } else
+                {
+                    dialog = new Dialog("Error", skin);
+                    dialog.text(result.toString());
+                    dialog.button("OK", true);
+                    dialog.show(stage);
+                }
             }
         });
 

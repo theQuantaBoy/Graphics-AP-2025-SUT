@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class App
 {
-    public static ArrayList<Player> players = new ArrayList<>();
+    private static ArrayList<Player> players = new ArrayList<>();
 
     public static Player findPlayer(String username)
     {
@@ -17,5 +17,10 @@ public class App
         }
 
         return null;
+    }
+
+    public static ArrayList<Player> getPlayers()
+    {
+        return players;
     }
 }
