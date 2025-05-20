@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class App
 {
+    private static Player currentPlayer;
     private static ArrayList<Player> players = new ArrayList<>();
 
     public static Player findPlayer(String username)
@@ -22,5 +23,15 @@ public class App
     public static ArrayList<Player> getPlayers()
     {
         return players;
+    }
+
+    public static void setCurrentPlayer(Player currentPlayer)
+    {
+        App.currentPlayer = currentPlayer;
+    }
+
+    public static Player getCurrentPlayer()
+    {
+        return currentPlayer;
     }
 }
