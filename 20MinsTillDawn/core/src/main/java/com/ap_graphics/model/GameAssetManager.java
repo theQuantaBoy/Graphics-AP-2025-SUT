@@ -31,7 +31,7 @@ public class GameAssetManager
     {
         for (Avatar avatar : Avatar.values())
         {
-            manager.load(avatar.getPath(), Texture.class);
+            manager.load(avatar.getPortraitPath(), Texture.class);
         }
 
         manager.finishLoading(); // Load them synchronously (or use async if needed)

@@ -1,6 +1,7 @@
 package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.Avatar;
+import com.ap_graphics.model.enums.SecurityQuestionOptions;
 
 public class Player
 {
@@ -8,15 +9,15 @@ public class Player
     private String username;
     private String password;
     private Avatar avatar;
-    private boolean securityQuestionAnswer;
+    private SecurityQuestionOptions answer;
 
-    public Player(String nickname, String username, String password, boolean securityQuestionAnswer, Avatar avatar)
+    public Player(String nickname, String username, String password, SecurityQuestionOptions answer, Avatar avatar)
     {
         this.nickname = nickname;
         this.username = username;
         this.password = password;
         this.avatar = avatar;
-        this.securityQuestionAnswer = securityQuestionAnswer;
+        this.answer = answer;
     }
 
     public void setNickname(String nickname)
@@ -34,9 +35,14 @@ public class Player
         this.password = password;
     }
 
-    public void setSecurityQuestionAnswer(boolean securityQuestionAnswer)
+    public void setAnswer(SecurityQuestionOptions answer)
     {
-        this.securityQuestionAnswer = securityQuestionAnswer;
+        this.answer = answer;
+    }
+
+    public void setAvatar(Avatar avatar)
+    {
+        this.avatar = avatar;
     }
 
     public String getNickname()
@@ -54,8 +60,13 @@ public class Player
         return password;
     }
 
-    public boolean isSecurityQuestionAnswer()
+    public Avatar getAvatar()
     {
-        return securityQuestionAnswer;
+        return avatar;
+    }
+
+    public SecurityQuestionOptions getAnswer()
+    {
+        return answer;
     }
 }

@@ -14,7 +14,6 @@ public class HintMenuScreen implements Screen
     private final Game app = TillDawn.getGame();
     private final Stage stage;
     private final Skin skin;
-    private final MainMenuController controller = new MainMenuController();
 
     private final Table table;
 

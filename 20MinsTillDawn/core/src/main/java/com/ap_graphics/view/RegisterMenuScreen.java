@@ -75,7 +75,7 @@ public class RegisterMenuScreen implements Screen
 
         // ✅ Avatar Table (right)
         Table avatarTable = new Table();
-        avatarImage = new Image(new Texture(Gdx.files.internal(Avatar.getAvatar(avatarIndex).getPath())));
+        avatarImage = new Image(new Texture(Gdx.files.internal(Avatar.getAvatar(avatarIndex).getPortraitPath())));
         avatarImage.setSize(240, 240);
         avatarTable.add(avatarImage).size(240, 240).center().row();
 
@@ -166,7 +166,7 @@ public class RegisterMenuScreen implements Screen
 
     private void updateAvatarDisplay(Label avatarName)
     {
-        Texture texture = new Texture(Gdx.files.internal(Avatar.getAvatar(avatarIndex).getPath()));
+        Texture texture = new Texture(Gdx.files.internal(Avatar.getAvatar(avatarIndex).getPortraitPath()));
         avatarImage.setDrawable(new TextureRegionDrawable(new TextureRegion(texture)));
         avatarImage.setSize(240, 240);
         avatarName.setText(Avatar.getAvatar(avatarIndex).getName());
@@ -174,7 +174,7 @@ public class RegisterMenuScreen implements Screen
 
     private void showDialog(String message)
     {
-        Dialog dialog = new Dialog("Oops!", skin);
+        Dialog dialog = new Dialog("Error", skin);
         dialog.text(message);
         dialog.button("OK");
         dialog.show(stage);
@@ -259,5 +259,4 @@ public class RegisterMenuScreen implements Screen
         dialog.getContentTable().add(content).center();
         dialog.show(stage);
     }
-
 }

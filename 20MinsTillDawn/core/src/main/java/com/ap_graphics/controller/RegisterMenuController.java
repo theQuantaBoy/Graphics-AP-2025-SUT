@@ -66,7 +66,7 @@ public class RegisterMenuController
             return new Result(false, "name can only contain english letters");
         }
 
-        Player player = new Player(name, username, password, true, Avatar.getAvatar(avatarId));
+        Player player = new Player(name, username, password, option, Avatar.getAvatar(avatarId));
         App.getPlayers().add(player);
         return new Result(true, "success");
     }
