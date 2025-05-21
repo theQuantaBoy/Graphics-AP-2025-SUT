@@ -1,7 +1,7 @@
 package com.ap_graphics.controller;
 
 import com.ap_graphics.model.App;
-import com.ap_graphics.model.Player;
+import com.ap_graphics.model.User;
 import com.ap_graphics.model.Result;
 import com.ap_graphics.model.enums.SecurityQuestionOptions;
 
@@ -9,7 +9,7 @@ public class LoginMenuController
 {
     public Result onLogin(String username, String password)
     {
-        Player player = App.findPlayer(username);
+        User player = App.findPlayer(username);
 
         if (player == null)
         {
@@ -27,7 +27,7 @@ public class LoginMenuController
 
     public Result validSecurityQuestion(String username, String password, SecurityQuestionOptions answer)
     {
-        Player player = App.findPlayer(username);
+        User player = App.findPlayer(username);
 
         if (player == null)
         {

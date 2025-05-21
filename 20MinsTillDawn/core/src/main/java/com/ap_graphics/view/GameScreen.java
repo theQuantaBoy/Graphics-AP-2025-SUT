@@ -22,27 +22,7 @@ public class GameScreen implements Screen {
     private Skin skin;
 
     public GameScreen(Avatar avatar) {
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 600);
 
-        batch = new SpriteBatch();
-        backgroundTexture = new Texture("images/essential/background.png");
-        character = new CharacterSprite(avatar);
-
-        stage = new Stage(new ScreenViewport());
-        skin = new Skin(Gdx.files.internal("skins/glassy/skin/glassy-ui.json"));
-
-        Gdx.input.setInputProcessor(new InputMultiplexer(stage, new InputAdapter() {
-            @Override
-            public boolean keyDown(int keycode) {
-                return character.handleKeyDown(keycode);
-            }
-
-            @Override
-            public boolean keyUp(int keycode) {
-                return character.handleKeyUp(keycode);
-            }
-        }));
     }
 
     @Override

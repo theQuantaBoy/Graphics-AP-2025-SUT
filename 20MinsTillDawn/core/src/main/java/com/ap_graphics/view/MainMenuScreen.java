@@ -96,22 +96,12 @@ public class MainMenuScreen implements Screen
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                app.setScreen(new HintMenuScreen(skin));
+//                app.setScreen(new HintMenuScreen(skin));
+                app.setScreen(new IdleAnimationMenuScreen(skin));
             }
         });
 
         table.add(hintButton).colspan(2).center().padBottom(60).expandX().row();
-
-        // In your MainMenuScreen's create() method, add:
-        TextButton playGameButton = new TextButton("Play Game", skin);
-        playGameButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                GameScreen gameScreen = new GameScreen(Avatar.AVATAR_00); // Start with Abby
-                app.setScreen(gameScreen);
-            }
-        });
-        table.add(playGameButton).pad(10).row();
 
         table.setFillParent(true);
         stage.addActor(table);
