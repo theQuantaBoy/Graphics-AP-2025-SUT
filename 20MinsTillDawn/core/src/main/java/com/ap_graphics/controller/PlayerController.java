@@ -2,60 +2,86 @@ package com.ap_graphics.controller;
 
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.model.Player;
+import com.ap_graphics.model.enums.Avatar;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 
 public class PlayerController
 {
     private final Player player;
-    private final Animation<Texture> idleAnimation;
+    private Animation<TextureRegion> idleAnimation;
+    private Animation<TextureRegion> runAnimation;
+    private Animation<TextureRegion> currentAnimation;
     private float time;
+    private final float beWidth;
+    private final float beHeight;
 
-    public PlayerController(Player player)
+    public PlayerController(Player player, Texture background)
     {
         this.player = player;
-        this.idleAnimation = player.getAvatar().getIdleAnimation();
+        Avatar avatar = player.getAvatar();
         this.time = 0f;
+        player.getPlayerSprite().setScale(2f); // Double size
+        this.idleAnimation = avatar.getIdleAnimation();
+        this.runAnimation = avatar.getRunAnimation(); // Create this similar to idle
+        this.currentAnimation = idleAnimation;
+        this.beWidth = background.getWidth();
+        this.beHeight = background.getHeight();
     }
 
-    public void update(float delta, SpriteBatch batch) {
+    public void update(float delta, SpriteBatch batch)
+    {
         handlePlayerInput();
-        updateIdleAnimation(delta);
+        updateAnimation(delta);
+
         player.getPlayerSprite().setPosition(player.getPosX(), player.getPosY());
         player.getPlayerSprite().draw(batch);
     }
-
 
     public void handlePlayerInput()
     {
         float speed = player.getSpeed();
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            player.setPosY(player.getPosY() + speed);
+            player.updateLocation(0, +speed); // Move up
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            player.setPosY(player.getPosY() - speed);
+            player.updateLocation(0, -speed); // Move down
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            player.setPosX(player.getPosX() + speed);
-            player.getPlayerSprite().setFlip(false, false);
+        if (Gdx.input.isKeyPressed(Input.Keys.D))
+        {
+            player.updateLocation(+speed, 0); // Move right
+            player.setHeadedRight(true);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            player.setPosX(player.getPosX() - speed);
-            player.getPlayerSprite().setFlip(true, false); // Flip horizontally when going left
+            player.updateLocation(-speed, 0); // Move left
+            player.setHeadedRight(false);  // ✅ Facing left
         }
     }
 
-
-    private void updateIdleAnimation(float delta)
+    private void updateAnimation(float delta)
     {
+        boolean moving = Gdx.input.isKeyPressed(Input.Keys.W)
+            || Gdx.input.isKeyPressed(Input.Keys.S)
+            || Gdx.input.isKeyPressed(Input.Keys.A)
+            || Gdx.input.isKeyPressed(Input.Keys.D);
+
+        currentAnimation = moving ? runAnimation : idleAnimation;
+
         time += delta;
-        Texture frame = idleAnimation.getKeyFrame(time, true);
-        player.setCurrentFrame(frame);
+
+        TextureRegion frame = currentAnimation.getKeyFrame(time, true);
+
+        player.setCurrentFrame(frame);              // Optional
+        player.getPlayerSprite().setRegion(frame);  // Required
+        player.getPlayerSprite().setFlip(!player.isHeadedRight(), false); // ✅ This line replaces flip logic
     }
 
     public void resetAnimation() {

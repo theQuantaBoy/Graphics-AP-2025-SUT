@@ -5,6 +5,7 @@ import com.ap_graphics.model.enums.SecurityQuestionOptions;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Player
 {
@@ -13,12 +14,14 @@ public class Player
     private String password;
     private Avatar avatar;
     private SecurityQuestionOptions answer;
-    private Texture currentFrame;
+    private TextureRegion currentFrame;
 
     private float width = (float) Gdx.graphics.getWidth() / 2;
     private float height = (float) Gdx.graphics.getHeight() / 2;
-    private float speed = 5;
+    private float speed = 2;
     private Sprite playerSprite;
+
+    private boolean isHeadedRight = true;
 
     public Player(String nickname, String username, String password, SecurityQuestionOptions answer, Avatar avatar)
     {
@@ -28,7 +31,7 @@ public class Player
         this.avatar = avatar;
         this.answer = answer;
 
-        Texture firstFrame = avatar.getIdleAnimation().getKeyFrames()[0];
+        TextureRegion firstFrame = avatar.getIdleAnimation().getKeyFrames()[0];
         this.playerSprite = new Sprite(firstFrame);
         this.playerSprite.setPosition(width, height);
     }
@@ -83,12 +86,12 @@ public class Player
         return answer;
     }
 
-    public Texture getCurrentFrame()
+    public TextureRegion getCurrentFrame()
     {
         return currentFrame;
     }
 
-    public void setCurrentFrame(Texture frame)
+    public void setCurrentFrame(TextureRegion frame)
     {
         this.currentFrame = frame;
         if (playerSprite != null)
@@ -142,4 +145,13 @@ public class Player
         this.playerSprite = sprite;
     }
 
+    public boolean isHeadedRight()
+    {
+        return isHeadedRight;
+    }
+
+    public void setHeadedRight(boolean headedRight)
+    {
+        isHeadedRight = headedRight;
+    }
 }
