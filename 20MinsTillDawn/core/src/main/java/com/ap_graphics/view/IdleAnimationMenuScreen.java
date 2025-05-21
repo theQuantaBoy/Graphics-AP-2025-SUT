@@ -1,6 +1,8 @@
 package com.ap_graphics.view;
 
+import com.ap_graphics.controller.PlayerController;
 import com.ap_graphics.model.App;
+import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.Avatar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -23,13 +25,15 @@ public class IdleAnimationMenuScreen implements Screen
     private final SpriteBatch batch;
 
     private final Animation<Texture> idleAnimation;
-    private float elapsedTime = 0f;
+
+    private final PlayerController playerController;
 
     public IdleAnimationMenuScreen(Skin skin)
     {
         this.skin = skin;
         this.stage = new Stage(new ScreenViewport());
         this.batch = new SpriteBatch();
+        this.playerController = new PlayerController(App.getCurrentPlayer());
 
         Avatar avatar = App.getCurrentPlayer().getAvatar();
         this.idleAnimation = avatar.getIdleAnimation();
@@ -37,10 +41,6 @@ public class IdleAnimationMenuScreen implements Screen
         Table table = new Table();
         table.setFillParent(true);
         table.center();
-
-        Label label = new Label("Idle Animation Demo", skin);
-        table.add(label).center().padBottom(20).row();
-
         stage.addActor(table);
     }
 
@@ -48,6 +48,10 @@ public class IdleAnimationMenuScreen implements Screen
     public void show()
     {
         Gdx.input.setInputProcessor(stage);
+
+        // Set first idle frame for safety
+        Player player = App.getCurrentPlayer();
+        player.setCurrentFrame(player.getAvatar().getIdleAnimation().getKeyFrame(0f));
     }
 
     @Override
@@ -56,15 +60,14 @@ public class IdleAnimationMenuScreen implements Screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        elapsedTime += delta;
+        batch.begin(); // ✅ BEGIN HERE
+
+        playerController.update(delta, batch); // 🟢 Just update everything here
+
+        batch.end(); // ✅ END HERE
 
         stage.act(delta);
         stage.draw();
-
-        batch.begin();
-        Texture currentFrame = idleAnimation.getKeyFrame(elapsedTime);
-        batch.draw(currentFrame, 300, 200, currentFrame.getWidth() * 2f, currentFrame.getHeight() * 2f);
-        batch.end();
     }
 
     @Override

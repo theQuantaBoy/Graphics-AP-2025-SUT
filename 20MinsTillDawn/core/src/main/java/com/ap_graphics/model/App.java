@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 public class App
 {
-    private static User currentPlayer;
-    private static ArrayList<User> players = new ArrayList<>();
+    private static Player currentPlayer;
+    private static ArrayList<Player> players = new ArrayList<>();
 
-    public static User findPlayer(String username)
+    public static Player findPlayer(String username)
     {
-        for (User player : players)
+        for (Player player : players)
         {
             if (player.getUsername().equals(username))
             {
@@ -20,17 +20,17 @@ public class App
         return null;
     }
 
-    public static ArrayList<User> getPlayers()
+    public static ArrayList<Player> getPlayers()
     {
         return players;
     }
 
-    public static void setCurrentPlayer(User currentPlayer)
+    public static void setCurrentPlayer(Player currentPlayer)
     {
         App.currentPlayer = currentPlayer;
     }
 
-    public static User getCurrentPlayer()
+    public static Player getCurrentPlayer()
     {
         return currentPlayer;
     }
