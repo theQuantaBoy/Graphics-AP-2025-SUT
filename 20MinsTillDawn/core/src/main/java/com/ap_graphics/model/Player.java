@@ -22,6 +22,7 @@ public class Player
     private Sprite playerSprite;
 
     private boolean isHeadedRight = true;
+    private Weapon currentWeapon;
 
     public Player(String nickname, String username, String password, SecurityQuestionOptions answer, Avatar avatar)
     {
@@ -153,5 +154,15 @@ public class Player
     public void setHeadedRight(boolean headedRight)
     {
         isHeadedRight = headedRight;
+    }
+
+    public Weapon getCurrentWeapon()
+    {
+        return currentWeapon;
+    }
+
+    public void setCurrentWeapon(Weapon currentWeapon)
+    {
+        this.currentWeapon = currentWeapon;
     }
 }

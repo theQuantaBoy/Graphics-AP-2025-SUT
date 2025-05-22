@@ -19,12 +19,6 @@ public class Elder extends Enemy
     }
 
     @Override
-    public void takeDamage(int dmg)
-    {
-
-    }
-
-    @Override
     public void update(float delta, Player player)
     {
 

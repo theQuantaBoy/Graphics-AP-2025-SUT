@@ -4,7 +4,10 @@ import com.ap_graphics.model.enums.EnemyType;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
+
+import javax.swing.text.Position;
 
 public abstract class Enemy extends AbstractAnimatedEntity
 {
@@ -26,8 +29,6 @@ public abstract class Enemy extends AbstractAnimatedEntity
         super.update(delta);
     }
 
-    public abstract void takeDamage(int dmg);
-
     public boolean isDead()
     {
         return isDead;
@@ -48,5 +49,20 @@ public abstract class Enemy extends AbstractAnimatedEntity
             position.x += normX * speed * delta;
             position.y += normY * speed * delta;
         }
+    }
+
+    public void takeDamage(int dmg)
+    {
+        hp -= dmg;
+        if (hp <= 0)
+        {
+            isDead = true;
+            // Spawn XP Orb (see next section)
+        }
+    }
+
+    public Vector2 getPosition()
+    {
+        return position;
     }
 }

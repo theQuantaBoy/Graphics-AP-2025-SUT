@@ -37,10 +37,4 @@ public class TentacleMonster extends Enemy
         TextureRegion sample = currentAnimation.getKeyFrame(0);
         return new Rectangle(position.x, position.y, sample.getRegionWidth(), sample.getRegionHeight());
     }
-
-    @Override
-    public void takeDamage(int dmg)
-    {
-
-    }
 }

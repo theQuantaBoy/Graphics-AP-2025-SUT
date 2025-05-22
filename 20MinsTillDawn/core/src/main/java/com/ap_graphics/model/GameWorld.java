@@ -33,6 +33,9 @@ public class GameWorld
     private float tentacleTimer = 0f;
     private final float tentacleInterval = 5f;
 
+    private ArrayList<XPOrb> xpOrbs = new ArrayList<>();
+    private ArrayList<Bullet> bullets = new ArrayList<>();
+
     public GameWorld(Player player, float w, float h)
     {
         instance = this;
@@ -66,6 +69,16 @@ public class GameWorld
         for (Enemy enemy : enemies)
         {
             enemy.update(delta, player);
+        }
+
+        Iterator<Enemy> iterator = enemies.iterator();
+        while (iterator.hasNext())
+        {
+            Enemy enemy = iterator.next();
+            if (enemy.isDead()) {
+                iterator.remove();
+                xpOrbs.add(new XPOrb(enemy.getPosition().x, enemy.getPosition().y));
+            }
         }
     }
 
@@ -145,5 +158,22 @@ public class GameWorld
     public float getTotalGameTime()
     {
         return totalGameTime;
+    }
+
+    public void checkCollisions()
+    {
+        Iterator<Bullet> bulletIter = bullets.iterator();
+        while (bulletIter.hasNext())
+        {
+            Bullet bullet = bulletIter.next();
+            for (Enemy enemy : enemies)
+            {
+                if (bullet.getBounds().overlaps(enemy.getBounds())) {
+                    enemy.takeDamage(bullet.getDamage());
+                    bulletIter.remove();
+                    break;
+                }
+            }
+        }
     }
 }

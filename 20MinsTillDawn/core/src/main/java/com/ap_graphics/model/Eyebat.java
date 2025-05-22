@@ -20,12 +20,6 @@ public class Eyebat extends Enemy
     }
 
     @Override
-    public void takeDamage(int dmg)
-    {
-
-    }
-
-    @Override
     public void update(float delta, Player player)
     {
         moveTowardPlayer(delta, player);
