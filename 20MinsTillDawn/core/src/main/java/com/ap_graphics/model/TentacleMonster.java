@@ -16,25 +16,14 @@ public class TentacleMonster extends Enemy
         super(type, x, y);
         spawnAnimation = type.getSpawnAnimation();
         this.hp = 25;
+        this.speed = 50f;
     }
 
     @Override
     public void update(float delta, Player player)
     {
-        if (position == null)
-        {
-            position = new Vector2(0, 0); // default position or handle appropriately
-        }
-
-        Vector2 direction = new Vector2(player.getPosX(), player.getPosY()).sub(position).nor();
-        position.add(direction.scl(speed * delta));
-        super.update(delta, player);
-    }
-
-    @Override
-    public void update(float delta)
-    {
-
+        moveTowardPlayer(delta, player);
+        super.update(delta);
     }
 
     @Override

@@ -12,26 +12,43 @@ public abstract class AbstractAnimatedEntity implements WorldObject
     protected Animation<TextureRegion> currentAnimation;
     protected float stateTime = 0f;
 
-    protected boolean facingRight = true;
-
     public AbstractAnimatedEntity(float x, float y)
     {
         this.position = new Vector2(x, y);
     }
 
     @Override
-    public void render(SpriteBatch batch, float delta)
-    {
+    public void render(SpriteBatch batch, float delta) {
         stateTime += delta;
         TextureRegion frame = currentAnimation.getKeyFrame(stateTime, true);
 
-        // چرخش بافت بر اساس جهت
-        if (!facingRight) {
+        float angleToPlayer = getAngleToPlayer();
+        boolean faceLeft = shouldFaceLeft();
+
+        // Flip the frame horizontally based on facing direction
+        if (faceLeft && !frame.isFlipX()) {
+            frame.flip(true, false);
+        } else if (!faceLeft && frame.isFlipX()) {
             frame.flip(true, false);
         }
 
-        batch.draw(frame, position.x, position.y);
-        frame.flip(true, false); // بازگرداندن جهت اصلی برای فریم بعدی
+        // Adjust angle to stay within -90 to +90 degrees
+        float drawAngle = angleToPlayer;
+        if (faceLeft) {
+            // Flip angle when flipped horizontally
+            drawAngle += 180;
+            if (drawAngle > 180) drawAngle -= 360;
+        }
+
+        // Draw the enemy rotated
+        batch.draw(
+            frame,
+            position.x, position.y,
+            frame.getRegionWidth() / 2f, frame.getRegionHeight() / 2f, // originX/Y
+            frame.getRegionWidth(), frame.getRegionHeight(),
+            1f, 1f, // scale
+            drawAngle
+        );
     }
 
     // In AbstractAnimatedEntity.java
@@ -46,5 +63,21 @@ public abstract class AbstractAnimatedEntity implements WorldObject
     {
         TextureRegion sample = currentAnimation.getKeyFrame(0);
         return new Rectangle(position.x, position.y, sample.getRegionWidth(), sample.getRegionHeight());
+    }
+
+    private boolean shouldFaceLeft()
+    {
+        Player player = App.getCurrentPlayer();
+        float baseX = player.getPosX();
+        return (baseX < position.x);
+    }
+
+    private float getAngleToPlayer()
+    {
+        Player player = App.getCurrentPlayer();
+        float dx = player.getPosX() - position.x;
+        float dy = player.getPosY() - position.y;
+
+        return (float) Math.toDegrees(Math.atan2(dy, dx));
     }
 }

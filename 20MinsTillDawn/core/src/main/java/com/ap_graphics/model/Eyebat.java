@@ -10,19 +10,7 @@ public class Eyebat extends Enemy
     {
         super(EnemyType.EYE_BAT, x, y);
         this.hp = 50;
-    }
-
-    @Override
-    public void update(float delta, Player player)
-    {
-        if (position == null)
-        {
-            position = new Vector2(0, 0); // default position or handle appropriately
-        }
-
-        Vector2 direction = new Vector2(player.getPosX(), player.getPosY()).sub(position).nor();
-        position.add(direction.scl(speed * delta));
-        super.update(delta, player);
+        this.speed = 100f;
     }
 
     @Override
@@ -38,8 +26,9 @@ public class Eyebat extends Enemy
     }
 
     @Override
-    public void update(float delta)
+    public void update(float delta, Player player)
     {
-
+        moveTowardPlayer(delta, player);
+        super.update(delta);
     }
 }

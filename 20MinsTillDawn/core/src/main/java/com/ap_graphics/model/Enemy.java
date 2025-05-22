@@ -8,29 +8,22 @@ import com.badlogic.gdx.math.Vector2;
 
 public abstract class Enemy extends AbstractAnimatedEntity
 {
-    protected float x, y;
     protected int hp;
     protected boolean isDead;
     protected final EnemyType type;
     protected float speed;
-
-    protected TextureRegion currentFrame;
-    protected Vector2 position;
 
     public Enemy(EnemyType type, float x, float y)
     {
         super(x, y);
         this.type = type;
         this.currentAnimation = type.getIdleAnimation();
+        this.position = new Vector2(x, y);
     }
 
     public void update(float delta, Player player)
     {
-        Vector2 direction = new Vector2(player.getPosX(), player.getPosY()).sub(position).nor();
-        position.add(direction.scl(speed * delta));
-
-        facingRight = (direction.x > 0);
-        super.update(delta); // Updates animation timing via AbstractAnimatedEntity
+        super.update(delta);
     }
 
     public abstract void takeDamage(int dmg);
@@ -38,5 +31,22 @@ public abstract class Enemy extends AbstractAnimatedEntity
     public boolean isDead()
     {
         return isDead;
+    }
+
+    public void moveTowardPlayer(float delta, Player player) { // ✅ Accept Player parameter
+        if (player == null) return;
+
+        float dx = player.getPosX() - position.x;
+        float dy = player.getPosY() - position.y;
+
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 1e-3) {
+            float normX = dx / distance;
+            float normY = dy / distance;
+
+            position.x += normX * speed * delta;
+            position.y += normY * speed * delta;
+        }
     }
 }
