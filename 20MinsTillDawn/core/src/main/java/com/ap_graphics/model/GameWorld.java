@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import javax.swing.text.Position;
 import java.util.*;
 
 public class GameWorld
@@ -78,6 +79,18 @@ public class GameWorld
             if (enemy.isDead()) {
                 iterator.remove();
                 xpOrbs.add(new XPOrb(enemy.getPosition().x, enemy.getPosition().y));
+            }
+        }
+
+        Iterator<Bullet> bulletIter = bullets.iterator();
+        while (bulletIter.hasNext())
+        {
+            Bullet bullet = bulletIter.next();
+            bullet.update(delta);
+            // Remove bullets that go off-screen
+            if (isOffScreen(bullet.getPosition()))
+            {
+                bulletIter.remove();
             }
         }
     }
@@ -175,5 +188,21 @@ public class GameWorld
                 }
             }
         }
+    }
+
+    // In GameWorld.java
+    private boolean isOffScreen(Vector2 position) {
+        return position.x < 0 || position.x > worldWidth ||
+            position.y < 0 || position.y > worldHeight;
+    }
+
+    public void addBullet(Bullet bullet)
+    {
+        bullets.add(bullet);
+    }
+
+    public ArrayList<Bullet> getBullets()
+    {
+        return bullets;
     }
 }

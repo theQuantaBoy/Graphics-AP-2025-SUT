@@ -1,17 +1,23 @@
 package com.ap_graphics.controller;
 
 import com.ap_graphics.TillDawn;
+import com.ap_graphics.model.Bullet;
+import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.Player;
+import com.ap_graphics.model.Weapon;
 import com.ap_graphics.model.enums.Avatar;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 public class PlayerController
 {
@@ -86,6 +92,65 @@ public class PlayerController
 
     public void resetAnimation() {
         time = 0f;
+    }
+
+    public void renderWeapon(SpriteBatch batch, Vector2 mousePos) {
+        Weapon weapon = player.getCurrentWeapon();
+        if (weapon == null) return;
+
+        // Calculate direction to mouse
+        Vector2 playerCenter = new Vector2(
+            player.getPosX(),
+            player.getPosY()
+        );
+        Vector2 mouseDir = mousePos.cpy().sub(playerCenter);
+
+        // Update weapon position/rotation
+        weapon.updatePosition(playerCenter, mouseDir);
+
+        // Render
+        TextureRegion tex = weapon.getType().getTextureRegion();
+        batch.draw(
+            tex,
+            weapon.getPosition().x,
+            weapon.getPosition().y,
+            tex.getRegionWidth() / 2f, // Origin X
+            tex.getRegionHeight() / 2f, // Origin Y
+            tex.getRegionWidth(),
+            tex.getRegionHeight(),
+            1f, 1f,
+            weapon.getRotation()
+        );
+    }
+
+    // In PlayerController.java
+    public void handleShooting(Player player, GameWorld gameWorld, OrthographicCamera camera) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            Weapon weapon = player.getCurrentWeapon();
+            if (weapon != null) {
+                // Convert to Vector3 with z=0
+                Vector3 mouseScreenPos = new Vector3(
+                    Gdx.input.getX(),
+                    Gdx.input.getY(),
+                    0
+                );
+                Vector3 mouseWorldPos = camera.unproject(mouseScreenPos);
+
+                // Calculate direction from WEAPON to mouse
+                Vector2 weaponPos = weapon.getPosition();
+                Vector2 direction = new Vector2(
+                    mouseWorldPos.x - weaponPos.x,
+                    mouseWorldPos.y - weaponPos.y
+                ).nor();
+
+                gameWorld.addBullet(new Bullet(
+                    weaponPos.x,
+                    weaponPos.y,
+                    direction,
+                    weapon.getType().getDamage()
+                ));
+            }
+        }
     }
 }
 

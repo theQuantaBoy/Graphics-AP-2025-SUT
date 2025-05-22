@@ -2,6 +2,7 @@ package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.Avatar;
 import com.ap_graphics.model.enums.SecurityQuestionOptions;
+import com.ap_graphics.model.enums.WeaponType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -18,7 +19,7 @@ public class Player
 
     private float width = (float) Gdx.graphics.getWidth() / 2;
     private float height = (float) Gdx.graphics.getHeight() / 2;
-    private float speed = 2;
+    private float speed = 0.75f;
     private Sprite playerSprite;
 
     private boolean isHeadedRight = true;
@@ -35,6 +36,7 @@ public class Player
         TextureRegion firstFrame = avatar.getIdleAnimation().getKeyFrames()[0];
         this.playerSprite = new Sprite(firstFrame);
         this.playerSprite.setPosition(width, height);
+        setCurrentWeapon(new Weapon(WeaponType.REVOLVER));
     }
 
     public void setNickname(String nickname)
