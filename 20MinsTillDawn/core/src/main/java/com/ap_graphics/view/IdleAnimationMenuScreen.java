@@ -2,8 +2,11 @@ package com.ap_graphics.view;
 
 import com.ap_graphics.controller.PlayerController;
 import com.ap_graphics.model.App;
+import com.ap_graphics.model.Enemy;
+import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.Avatar;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,9 +29,13 @@ public class IdleAnimationMenuScreen implements Screen
     private final SpriteBatch batch;
     private final Animation<TextureRegion> idleAnimation;
     private final PlayerController playerController;
+    private final GameWorld gameWorld;
 
     private OrthographicCamera camera;
     private Texture background;
+
+    private final Player player;
+    private Label timerLabel;
 
     public IdleAnimationMenuScreen(Skin skin)
     {
@@ -39,8 +46,15 @@ public class IdleAnimationMenuScreen implements Screen
         background = new Texture("images/essential/background.png");
         this.playerController = new PlayerController(App.getCurrentPlayer(), background);
 
+        this.player = App.getCurrentPlayer();
+        this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight());
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        timerLabel = new Label("Time: 0", skin);
+        timerLabel.setPosition(20, Gdx.graphics.getHeight() - 40);
+        stage.addActor(timerLabel);
 
         Avatar avatar = App.getCurrentPlayer().getAvatar();
         this.idleAnimation = avatar.getIdleAnimation();
@@ -80,6 +94,17 @@ public class IdleAnimationMenuScreen implements Screen
         // 🔴 Start drawing
         batch.begin();
         batch.draw(background, 0, 0); // Draw the full background at origin
+
+        timerLabel.setText("Time: " + (int) gameWorld.getTotalGameTime());
+        gameWorld.update(delta);
+
+        playerController.update(delta, batch);
+
+        for (Enemy enemy : gameWorld.getEnemies())
+        {
+            enemy.render(batch, delta); // or use Sprite if you're using it
+        }
+
         playerController.update(delta, batch); // Draw the player
         batch.end();
 

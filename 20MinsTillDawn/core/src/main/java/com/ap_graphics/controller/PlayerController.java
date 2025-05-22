@@ -28,7 +28,7 @@ public class PlayerController
         this.player = player;
         Avatar avatar = player.getAvatar();
         this.time = 0f;
-        player.getPlayerSprite().setScale(2f); // Double size
+        player.getPlayerSprite();
         this.idleAnimation = avatar.getIdleAnimation();
         this.runAnimation = avatar.getRunAnimation(); // Create this similar to idle
         this.currentAnimation = idleAnimation;
