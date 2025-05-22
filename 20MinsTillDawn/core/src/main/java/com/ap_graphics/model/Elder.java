@@ -19,8 +19,19 @@ public class Elder extends Enemy
     }
 
     @Override
-    public void update(float delta, Player player)
-    {
+    public void takeDamage(int dmg) {
+        hp -= dmg;
+        if(hp <= 0) {
+            // Special death behavior for tentacle monsters
+            die();
+            // Add tentacle-specific death effects
+        }
+    }
 
+    private void die() {
+        // Play death animation
+        // Spawn tentacle-specific loot
+        isDead = true;
+        GameWorld.getInstance().addXpOrb(new XPOrb(position.x, position.y));
     }
 }

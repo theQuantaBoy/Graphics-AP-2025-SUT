@@ -1,10 +1,12 @@
 package com.ap_graphics.view;
 
+import com.ap_graphics.controller.CursorManager;
 import com.ap_graphics.controller.PlayerController;
 import com.ap_graphics.model.*;
 import com.ap_graphics.model.enums.Avatar;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -36,6 +38,8 @@ public class IdleAnimationMenuScreen implements Screen
     private final Player player;
     private Label timerLabel;
 
+    private CursorManager cursorManager;
+
     public IdleAnimationMenuScreen(Skin skin)
     {
         this.skin = skin;
@@ -54,6 +58,8 @@ public class IdleAnimationMenuScreen implements Screen
         timerLabel = new Label("Time: 0", skin);
         timerLabel.setPosition(20, Gdx.graphics.getHeight() - 40);
         stage.addActor(timerLabel);
+
+        cursorManager = new CursorManager();
 
         Avatar avatar = App.getCurrentPlayer().getAvatar();
         this.idleAnimation = avatar.getIdleAnimation();
@@ -146,6 +152,9 @@ public class IdleAnimationMenuScreen implements Screen
             enemy.render(batch, delta);
         }
 
+        boolean isMouseDown = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+        cursorManager.update(isMouseDown);
+
         batch.end();
 
         // 🟣 Draw UI elements
@@ -172,6 +181,7 @@ public class IdleAnimationMenuScreen implements Screen
     public void dispose()
     {
         stage.dispose();
+        cursorManager.dispose();
         batch.dispose();
     }
 }

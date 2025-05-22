@@ -10,7 +10,7 @@ public class Bullet
 {
     private Vector2 position;
     private Vector2 direction;
-    private float speed = 1000f; // TODO: maybe change later?
+    private float speed = 700f; // TODO: maybe change later?
     private int damage;
     private final Texture texture = new Texture("images/weapons/Icon_Bullet_Storm.png");
     private float rotation;

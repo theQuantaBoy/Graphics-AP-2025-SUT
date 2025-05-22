@@ -33,8 +33,19 @@ public class TentacleMonster extends Enemy
     }
 
     @Override
-    public Rectangle getBounds() {
-        TextureRegion sample = currentAnimation.getKeyFrame(0);
-        return new Rectangle(position.x, position.y, sample.getRegionWidth(), sample.getRegionHeight());
+    public void takeDamage(int dmg) {
+        hp -= dmg;
+        if(hp <= 0) {
+            // Special death behavior for tentacle monsters
+            die();
+            // Add tentacle-specific death effects
+        }
+    }
+
+    private void die() {
+        // Play death animation
+        // Spawn tentacle-specific loot
+        isDead = true;
+        GameWorld.getInstance().addXpOrb(new XPOrb(position.x, position.y));
     }
 }

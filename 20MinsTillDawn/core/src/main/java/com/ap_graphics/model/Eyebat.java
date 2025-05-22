@@ -25,4 +25,21 @@ public class Eyebat extends Enemy
         moveTowardPlayer(delta, player);
         super.update(delta);
     }
+
+    @Override
+    public void takeDamage(int dmg) {
+        hp -= dmg;
+        if(hp <= 0) {
+            // Special death behavior for tentacle monsters
+            die();
+            // Add tentacle-specific death effects
+        }
+    }
+
+    private void die() {
+        // Play death animation
+        // Spawn tentacle-specific loot
+        isDead = true;
+        GameWorld.getInstance().addXpOrb(new XPOrb(position.x, position.y));
+    }
 }

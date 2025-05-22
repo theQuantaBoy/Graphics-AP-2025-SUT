@@ -1,7 +1,6 @@
 package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.EnemyType;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,7 +8,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import javax.swing.text.Position;
 import java.util.*;
 
 public class GameWorld
@@ -82,15 +80,37 @@ public class GameWorld
             }
         }
 
-        Iterator<Bullet> bulletIter = bullets.iterator();
-        while (bulletIter.hasNext())
-        {
-            Bullet bullet = bulletIter.next();
-            bullet.update(delta);
+        Iterator<Bullet> bulletIterator = bullets.iterator();
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+            bullet.update(delta); // Add this line
+
             // Remove bullets that go off-screen
-            if (isOffScreen(bullet.getPosition()))
-            {
-                bulletIter.remove();
+            if (isOffScreen(bullet.getPosition())) {
+                bulletIterator.remove();
+            }
+        }
+
+        Iterator<Bullet> bulletIterator2 = bullets.iterator();
+        while (bulletIterator2.hasNext()) {
+            Bullet bullet = bulletIterator2.next();
+            Rectangle bulletBounds = bullet.getBounds();
+
+            Iterator<Enemy> enemyIterator = enemies.iterator();
+            while (enemyIterator.hasNext()) {
+                Enemy enemy = enemyIterator.next();
+                if (enemy.getBounds().overlaps(bulletBounds)) {
+                    // Damage enemy and remove bullet
+                    enemy.takeDamage(bullet.getDamage());
+                    bulletIterator2.remove();
+
+                    // Remove enemy if dead
+                    if (enemy.isDead()) {
+                        enemyIterator.remove();
+                        // Add XP orb spawn here if needed
+                    }
+                    break; // Bullet can only hit one enemy
+                }
             }
         }
     }
@@ -204,5 +224,10 @@ public class GameWorld
     public ArrayList<Bullet> getBullets()
     {
         return bullets;
+    }
+
+    public void addXpOrb(XPOrb orb)
+    {
+        xpOrbs.add(orb);
     }
 }
