@@ -4,6 +4,7 @@ import com.ap_graphics.model.enums.Avatar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class GameAssetManager
@@ -11,6 +12,8 @@ public class GameAssetManager
     private static GameAssetManager gameAssetManager;
     private final AssetManager manager = new AssetManager();
     private final Skin skin = new Skin(Gdx.files.internal("skins/pixthulhu/skin/pixthulhu-ui.json"));
+
+    public static BitmapFont defaultFont;
 
     public static GameAssetManager getGameAssetManager()
     {

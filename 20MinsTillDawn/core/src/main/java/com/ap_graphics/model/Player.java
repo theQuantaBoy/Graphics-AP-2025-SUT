@@ -1,10 +1,10 @@
 package com.ap_graphics.model;
 
+import com.ap_graphics.model.combat.Weapon;
 import com.ap_graphics.model.enums.Avatar;
 import com.ap_graphics.model.enums.SecurityQuestionOptions;
 import com.ap_graphics.model.enums.WeaponType;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;

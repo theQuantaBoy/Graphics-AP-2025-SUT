@@ -1,21 +1,17 @@
 package com.ap_graphics.controller;
 
-import com.ap_graphics.TillDawn;
 import com.ap_graphics.model.Bullet;
 import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.Player;
-import com.ap_graphics.model.Weapon;
+import com.ap_graphics.model.combat.Weapon;
 import com.ap_graphics.model.enums.Avatar;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 

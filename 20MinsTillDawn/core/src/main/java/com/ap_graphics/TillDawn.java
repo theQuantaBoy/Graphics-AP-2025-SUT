@@ -1,6 +1,7 @@
 package com.ap_graphics;
 
 import com.ap_graphics.model.GameAssetManager;
+import com.ap_graphics.view.FirstMenuScreen;
 import com.ap_graphics.view.RegisterMenuScreen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -16,7 +17,8 @@ public class TillDawn extends com.badlogic.gdx.Game
         GameAssetManager.getGameAssetManager().loadAllAssets();
         game = this;
         batch = new SpriteBatch();
-        getGame().setScreen(new RegisterMenuScreen(GameAssetManager.getGameAssetManager().getSkin()));
+//        getGame().setScreen(new RegisterMenuScreen(GameAssetManager.getGameAssetManager().getSkin()));
+        getGame().setScreen(new FirstMenuScreen());
     }
 
     @Override

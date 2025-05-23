@@ -1,5 +1,6 @@
 package com.ap_graphics.model;
 
+import com.ap_graphics.model.combat.*;
 import com.ap_graphics.model.enums.EnemyType;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
