@@ -1,8 +1,7 @@
 package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.EnemyType;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -29,11 +28,12 @@ public class GameWorld
     private float eyebatSpawnTimer = 0f;
 
     private final float worldWidth, worldHeight;
-    private float tentacleTimer = 0f;
-    private final float tentacleInterval = 5f;
 
-    private ArrayList<XPOrb> xpOrbs = new ArrayList<>();
+    private ArrayList<XpOrb> xpOrbs = new ArrayList<>();
     private ArrayList<Bullet> bullets = new ArrayList<>();
+
+    private List<FloatingText> floatingTexts = new ArrayList<>();
+    private BitmapFont xpFont;
 
     public GameWorld(Player player, float w, float h)
     {
@@ -42,8 +42,8 @@ public class GameWorld
         this.worldWidth = w;
         this.worldHeight = h;
 
-        // add static trees
-//        obstacles.add(new Tree(new Texture("tree.png"), 200, 200));
+        xpFont = new BitmapFont();
+        xpFont.getData().setScale(1.5f);
     }
 
     public void update(float delta)
@@ -52,67 +52,16 @@ public class GameWorld
         tentacleSpawnTimer += delta;
         eyebatSpawnTimer += delta;
 
-        if (tentacleSpawnTimer >= 3f)
-        {
-            spawnTentacleMonster();
-            tentacleSpawnTimer = 0f;
-        }
-
-        float eyebatInterval = Math.max(4 * enemies.size() - totalGameTime + 30, 10);
-        if (eyebatSpawnTimer >= eyebatInterval)
-        {
-            spawnEyebat();
-            eyebatSpawnTimer = 0f;
-        }
+        spawnEnemies();
+        checkCollisions(delta);
 
         for (Enemy enemy : enemies)
         {
             enemy.update(delta, player);
         }
 
-        Iterator<Enemy> iterator = enemies.iterator();
-        while (iterator.hasNext())
-        {
-            Enemy enemy = iterator.next();
-            if (enemy.isDead()) {
-                iterator.remove();
-                xpOrbs.add(new XPOrb(enemy.getPosition().x, enemy.getPosition().y));
-            }
-        }
-
-        Iterator<Bullet> bulletIterator = bullets.iterator();
-        while (bulletIterator.hasNext()) {
-            Bullet bullet = bulletIterator.next();
-            bullet.update(delta); // Add this line
-
-            // Remove bullets that go off-screen
-            if (isOffScreen(bullet.getPosition())) {
-                bulletIterator.remove();
-            }
-        }
-
-        Iterator<Bullet> bulletIterator2 = bullets.iterator();
-        while (bulletIterator2.hasNext()) {
-            Bullet bullet = bulletIterator2.next();
-            Rectangle bulletBounds = bullet.getBounds();
-
-            Iterator<Enemy> enemyIterator = enemies.iterator();
-            while (enemyIterator.hasNext()) {
-                Enemy enemy = enemyIterator.next();
-                if (enemy.getBounds().overlaps(bulletBounds)) {
-                    // Damage enemy and remove bullet
-                    enemy.takeDamage(bullet.getDamage());
-                    bulletIterator2.remove();
-
-                    // Remove enemy if dead
-                    if (enemy.isDead()) {
-                        enemyIterator.remove();
-                        // Add XP orb spawn here if needed
-                    }
-                    break; // Bullet can only hit one enemy
-                }
-            }
-        }
+        updateOrbs(delta);
+        updateFloatingTexts(delta);
     }
 
     public void render(SpriteBatch batch, float delta)
@@ -120,33 +69,6 @@ public class GameWorld
         obstacles.forEach(o -> o.render(batch, delta));
         enemies.forEach(e -> e.render(batch, delta));
         player.getPlayerSprite().draw(batch);
-    }
-
-    private TentacleMonster spawnTentacle()
-    {
-        float x, y;
-        switch (MathUtils.random(3))
-        {
-            case 0:
-                x = 0;
-                y = MathUtils.random(worldHeight);
-                break;
-            case 1:
-                x = worldWidth;
-                y = MathUtils.random(worldHeight);
-                break;
-            case 2:
-                x = MathUtils.random(worldWidth);
-                y = 0;
-                break;
-            default:
-                x = MathUtils.random(worldWidth);
-                y = worldHeight;
-                break;
-        }
-        Animation<TextureRegion> idle = player.getAvatar().getIdleAnimation();
-        Animation<TextureRegion> run = player.getAvatar().getRunAnimation();
-        return new TentacleMonster(EnemyType.TENTACLE_1, x, y);
     }
 
     public Player getPlayer()
@@ -193,25 +115,39 @@ public class GameWorld
         return totalGameTime;
     }
 
-    public void checkCollisions()
+    public void checkCollisions(float delta)
     {
         Iterator<Bullet> bulletIter = bullets.iterator();
         while (bulletIter.hasNext())
         {
             Bullet bullet = bulletIter.next();
-            for (Enemy enemy : enemies)
+            bullet.update(delta);
+
+            if (isOffScreen(bullet.getPosition()))
             {
-                if (bullet.getBounds().overlaps(enemy.getBounds())) {
+                bulletIter.remove();
+                continue;
+            }
+
+            Rectangle bulletBounds = bullet.getBounds();
+            Iterator<Enemy> enemyCollisionIter = enemies.iterator();
+
+            while (enemyCollisionIter.hasNext())
+            {
+                Enemy enemy = enemyCollisionIter.next();
+                if (enemy.getBounds().overlaps(bulletBounds))
+                {
                     enemy.takeDamage(bullet.getDamage());
+                    xpOrbs.add(new XpOrb(enemy.getPosition().x, enemy.getPosition().y));
+                    enemyCollisionIter.remove();
                     bulletIter.remove();
-                    break;
                 }
             }
         }
     }
 
-    // In GameWorld.java
-    private boolean isOffScreen(Vector2 position) {
+    private boolean isOffScreen(Vector2 position)
+    {
         return position.x < 0 || position.x > worldWidth ||
             position.y < 0 || position.y > worldHeight;
     }
@@ -226,8 +162,73 @@ public class GameWorld
         return bullets;
     }
 
-    public void addXpOrb(XPOrb orb)
+    public void addXpOrb(XpOrb orb)
     {
         xpOrbs.add(orb);
+    }
+
+    public void addFloatingText(String text, Vector2 position)
+    {
+        floatingTexts.add(new FloatingText(text, position));
+    }
+
+    public void renderUI(SpriteBatch batch)
+    {
+        xpFont.setColor(1, 1, 0, 1); // Reset color before drawing
+        floatingTexts.forEach(text -> text.render(batch, xpFont));
+    }
+
+    public ArrayList<XpOrb> getXpOrbs()
+    {
+        return xpOrbs;
+    }
+
+    public void spawnEnemies()
+    {
+        if (tentacleSpawnTimer >= 3f)
+        {
+            spawnTentacleMonster();
+            tentacleSpawnTimer = 0f;
+        }
+
+        float eyebatInterval = Math.max(4 * enemies.size() - totalGameTime + 30, 10);
+        if (eyebatSpawnTimer >= eyebatInterval) {
+            spawnEyebat();
+            eyebatSpawnTimer = 0f;
+        }
+    }
+
+    public void updateOrbs(float delta)
+    {
+        Iterator<XpOrb> orbIter = xpOrbs.iterator();
+        while (orbIter.hasNext())
+        {
+            XpOrb orb = orbIter.next();
+            orb.update(delta);
+
+            if (orb.getBounds().overlaps(player.getBounds()))
+            {
+                player.gainXP(3);
+                addFloatingText("+3", new Vector2(player.getPosX(), player.getPosY()));
+                orbIter.remove();
+            }
+
+            if (orb.shouldRemove())
+            {
+                orbIter.remove();
+            }
+        }
+    }
+
+    public void updateFloatingTexts(float delta)
+    {
+        Iterator<FloatingText> textIter = floatingTexts.iterator();
+        while (textIter.hasNext())
+        {
+            if (textIter.next().update(delta))
+            {
+                textIter.remove();
+            }
+        }
     }
 }

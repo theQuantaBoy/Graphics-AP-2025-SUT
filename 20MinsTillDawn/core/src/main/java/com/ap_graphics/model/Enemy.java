@@ -1,14 +1,8 @@
 package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.EnemyType;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-
-import javax.swing.text.Position;
 
 public abstract class Enemy extends AbstractAnimatedEntity
 {
@@ -16,6 +10,9 @@ public abstract class Enemy extends AbstractAnimatedEntity
     protected boolean isDead;
     protected final EnemyType type;
     protected float speed;
+
+    private float deathStateTime = 0;
+    private boolean isDying = false;
 
     public Enemy(EnemyType type, float x, float y)
     {
@@ -27,6 +24,7 @@ public abstract class Enemy extends AbstractAnimatedEntity
 
     public void update(float delta, Player player)
     {
+        if (isDead()) return;
         super.update(delta);
     }
 
@@ -35,7 +33,8 @@ public abstract class Enemy extends AbstractAnimatedEntity
         return isDead;
     }
 
-    public void moveTowardPlayer(float delta, Player player) { // ✅ Accept Player parameter
+    public void moveTowardPlayer(float delta, Player player)
+    {
         if (player == null) return;
 
         float dx = player.getPosX() - position.x;
@@ -43,7 +42,8 @@ public abstract class Enemy extends AbstractAnimatedEntity
 
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-        if (distance > 1e-3) {
+        if (distance > 1e-3)
+        {
             float normX = dx / distance;
             float normY = dy / distance;
 
@@ -58,7 +58,7 @@ public abstract class Enemy extends AbstractAnimatedEntity
         if (hp <= 0)
         {
             isDead = true;
-            // Spawn XP Orb (see next section)
+            die();
         }
     }
 
@@ -67,13 +67,18 @@ public abstract class Enemy extends AbstractAnimatedEntity
         return position;
     }
 
-    public Rectangle getBounds() {
-        TextureRegion frame = currentAnimation.getKeyFrame(0);
-        return new Rectangle(
-            position.x,
-            position.y,
-            frame.getRegionWidth(),
-            frame.getRegionHeight()
-        );
+    @Override
+    public void render(SpriteBatch batch, float delta)
+    {
+        if (!isDead)
+        {
+            super.render(batch, delta);
+        }
+    }
+
+    public void die()
+    {
+        isDying = true;
+        deathStateTime = 0;
     }
 }

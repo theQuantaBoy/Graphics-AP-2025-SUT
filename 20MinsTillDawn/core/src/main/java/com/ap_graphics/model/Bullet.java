@@ -31,7 +31,6 @@ public class Bullet
 
     public Rectangle getBounds()
     {
-        // Use texture dimensions for hitbox
         return new Rectangle(
             position.x - texture.getWidth() / 2f,  // Center hitbox on position
             position.y - texture.getHeight() / 2f,
@@ -52,7 +51,7 @@ public class Bullet
             texture.getHeight(),
             1f,
             1f,
-            rotation,  // Rotate texture to face direction
+            rotation,
             0,
             0,
             texture.getWidth(),

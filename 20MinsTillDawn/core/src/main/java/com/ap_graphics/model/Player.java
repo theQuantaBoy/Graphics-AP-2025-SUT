@@ -7,6 +7,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 public class Player
 {
@@ -19,11 +21,13 @@ public class Player
 
     private float width = (float) Gdx.graphics.getWidth() / 2;
     private float height = (float) Gdx.graphics.getHeight() / 2;
-    private float speed = 0.75f;
+    private float speed = 1.25f;
     private Sprite playerSprite;
 
     private boolean isHeadedRight = true;
     private Weapon currentWeapon;
+
+    private int xp = 0;
 
     public Player(String nickname, String username, String password, SecurityQuestionOptions answer, Avatar avatar)
     {
@@ -166,5 +170,31 @@ public class Player
     public void setCurrentWeapon(Weapon currentWeapon)
     {
         this.currentWeapon = currentWeapon;
+    }
+
+    public void gainXP(int xp)
+    {
+        this.xp += xp;
+    }
+
+    public Vector2 getPosition()
+    {
+        return new Vector2(width, height);
+    }
+
+    public Rectangle getBounds() {
+        // Get dimensions from player's current animation frame
+        TextureRegion frame = currentFrame;
+
+        // Calculate centered bounding box
+        float width = frame.getRegionWidth();
+        float height = frame.getRegionHeight();
+
+        return new Rectangle(
+            getPosX() - width/2f,  // Center X
+            getPosY() - height/2f, // Center Y
+            width,                  // Actual width
+            height                  // Actual height
+        );
     }
 }

@@ -4,7 +4,6 @@ import com.ap_graphics.controller.CursorManager;
 import com.ap_graphics.controller.PlayerController;
 import com.ap_graphics.model.*;
 import com.ap_graphics.model.enums.Avatar;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -17,7 +16,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -55,9 +53,15 @@ public class IdleAnimationMenuScreen implements Screen
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        timerLabel = new Label("Time: 0", skin);
-        timerLabel.setPosition(20, Gdx.graphics.getHeight() - 40);
-        stage.addActor(timerLabel);
+        // Initialize timerLabel
+        timerLabel = new Label("Time: 0", skin); // <-- THIS LINE WAS MISSING
+
+        // In the constructor
+        Table uiTable = new Table();
+        uiTable.top().left();
+        uiTable.setFillParent(true);
+        uiTable.add(timerLabel).pad(20).row();
+        stage.addActor(uiTable);
 
         cursorManager = new CursorManager();
 
@@ -97,33 +101,34 @@ public class IdleAnimationMenuScreen implements Screen
 
         // 🔴 Start drawing
         batch.begin();
+
+        // Draw background
         batch.draw(background, 0, 0);
 
-        timerLabel.setText("Time: " + (int) gameWorld.getTotalGameTime());
+        // Update world state
         gameWorld.update(delta);
 
-        // Get mouse position in WORLD coordinates
-        Vector3 mouseScreenPos = new Vector3(
-            Gdx.input.getX(),
-            Gdx.input.getY(),
-            0
-        );
+        // Update timer UI
+        timerLabel.setText("Time: " + (int) gameWorld.getTotalGameTime());
+
+        // Get mouse world position
+        Vector3 mouseScreenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         Vector3 mouseWorldPos = camera.unproject(mouseScreenPos);
 
-        // Update weapon position/direction
+        // Update weapon direction
         if (player.getCurrentWeapon() != null) {
             Vector2 playerPos = new Vector2(player.getPosX(), player.getPosY());
             Vector2 mouseDir = new Vector2(mouseWorldPos.x - playerPos.x, mouseWorldPos.y - playerPos.y);
             player.getCurrentWeapon().updatePosition(playerPos, mouseDir);
         }
 
-        // Handle shooting (pass camera)
+        // Handle shooting
         playerController.handleShooting(player, gameWorld, camera);
 
-        // Draw player first
+        // Draw player
         playerController.update(delta, batch);
 
-        // Draw weapon
+        // Draw player's weapon
         if (player.getCurrentWeapon() != null) {
             TextureRegion weaponTex = player.getCurrentWeapon().getType().getTextureRegion();
             Vector2 weaponPos = player.getCurrentWeapon().getPosition();
@@ -132,8 +137,8 @@ public class IdleAnimationMenuScreen implements Screen
                 weaponTex,
                 weaponPos.x,
                 weaponPos.y,
-                weaponTex.getRegionWidth()/2f,
-                weaponTex.getRegionHeight()/2f,
+                weaponTex.getRegionWidth() / 2f,
+                weaponTex.getRegionHeight() / 2f,
                 weaponTex.getRegionWidth(),
                 weaponTex.getRegionHeight(),
                 1f,
@@ -142,29 +147,46 @@ public class IdleAnimationMenuScreen implements Screen
             );
         }
 
-        // Draw bullets
-        for (Bullet bullet : gameWorld.getBullets()) {
-            bullet.render(batch);
-        }
+        // ✅ RENDER ORDER FIXES BEGIN HERE
 
-        // Draw enemies
+        // Draw live enemies first
         for (Enemy enemy : gameWorld.getEnemies()) {
             enemy.render(batch, delta);
         }
 
+        // Then draw dying enemies immediately after
+//        for (Enemy enemy : gameWorld.getDyingEnemies()) {
+//            enemy.render(batch, delta);
+//        }
+
+        // Draw bullets next
+        for (Bullet bullet : gameWorld.getBullets()) {
+            bullet.render(batch);
+        }
+
+        // Draw XP orbs (transparent, so after bullets)
+        for (XpOrb orb : gameWorld.getXpOrbs()) {
+            orb.render(batch);
+        }
+
+        // Now safe to render UI elements
+        gameWorld.renderUI(batch);
+
+        // Cursor state
         boolean isMouseDown = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
         cursorManager.update(isMouseDown);
 
+        // Finish drawing
         batch.end();
 
-        // 🟣 Draw UI elements
+        // 🟣 Draw Stage UI (buttons, overlays)
         stage.act(delta);
         stage.draw();
     }
 
     @Override
-    public void resize(int width, int height)
-    {
+    public void resize(int width, int height) {
+        camera.setToOrtho(false, width, height); // Add this line
         stage.getViewport().update(width, height, true);
     }
 
@@ -182,6 +204,7 @@ public class IdleAnimationMenuScreen implements Screen
     {
         stage.dispose();
         cursorManager.dispose();
+//       Enemy.disposeTextures();
         batch.dispose();
     }
 }

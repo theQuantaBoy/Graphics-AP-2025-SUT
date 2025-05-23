@@ -2,7 +2,6 @@ package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.EnemyType;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 
 public class Elder extends Enemy
 {
@@ -28,10 +27,11 @@ public class Elder extends Enemy
         }
     }
 
-    private void die() {
+    public void die() {
         // Play death animation
         // Spawn tentacle-specific loot
+//        super.die();
         isDead = true;
-        GameWorld.getInstance().addXpOrb(new XPOrb(position.x, position.y));
+        GameWorld.getInstance().addXpOrb(new XpOrb(position.x, position.y));
     }
 }

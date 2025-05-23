@@ -2,7 +2,6 @@ package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.EnemyType;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 
 public class Eyebat extends Enemy
 {
@@ -36,10 +35,9 @@ public class Eyebat extends Enemy
         }
     }
 
-    private void die() {
-        // Play death animation
-        // Spawn tentacle-specific loot
+    public void die() {
+        super.die();
         isDead = true;
-        GameWorld.getInstance().addXpOrb(new XPOrb(position.x, position.y));
+        GameWorld.getInstance().addXpOrb(new XpOrb(position.x, position.y));
     }
 }

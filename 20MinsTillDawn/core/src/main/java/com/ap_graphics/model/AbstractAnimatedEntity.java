@@ -18,29 +18,30 @@ public abstract class AbstractAnimatedEntity implements WorldObject
     }
 
     @Override
-    public void render(SpriteBatch batch, float delta) {
+    public void render(SpriteBatch batch, float delta)
+    {
         stateTime += delta;
         TextureRegion frame = currentAnimation.getKeyFrame(stateTime, true);
 
         float angleToPlayer = getAngleToPlayer();
         boolean faceLeft = shouldFaceLeft();
 
-        // Flip the frame horizontally based on facing direction
-        if (faceLeft && !frame.isFlipX()) {
+        if (faceLeft && !frame.isFlipX())
+        {
             frame.flip(true, false);
-        } else if (!faceLeft && frame.isFlipX()) {
+        } else if (!faceLeft && frame.isFlipX())
+        {
             frame.flip(true, false);
         }
 
-        // Adjust angle to stay within -90 to +90 degrees
         float drawAngle = angleToPlayer;
-        if (faceLeft) {
-            // Flip angle when flipped horizontally
+        if (faceLeft)
+        {
             drawAngle += 180;
             if (drawAngle > 180) drawAngle -= 360;
         }
 
-        // Draw the enemy rotated
+        // for rotation
         batch.draw(
             frame,
             position.x, position.y,
@@ -51,10 +52,9 @@ public abstract class AbstractAnimatedEntity implements WorldObject
         );
     }
 
-    // In AbstractAnimatedEntity.java
     @Override
-    public void update(float delta) {
-        // Update animation timer
+    public void update(float delta)
+    {
         stateTime += delta;
     }
 
