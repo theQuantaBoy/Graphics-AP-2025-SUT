@@ -29,22 +29,4 @@ public class TentacleMonster extends Enemy
     {
         super.render(batch, delta); // Use superclass rendering
     }
-
-    @Override
-    public void takeDamage(int dmg) {
-        hp -= dmg;
-        if(hp <= 0) {
-            // Special death behavior for tentacle monsters
-            die();
-            // Add tentacle-specific death effects
-        }
-    }
-
-    public void die() {
-        // Play death animation
-        // Spawn tentacle-specific loot
-        super.die();
-        isDead = true;
-        GameWorld.getInstance().addXpOrb(new XpOrb(position.x, position.y));
-    }
 }

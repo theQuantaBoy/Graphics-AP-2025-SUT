@@ -90,45 +90,13 @@ public class PlayerController
         player.getPlayerSprite().setFlip(!player.isHeadedRight(), false); // ✅ This line replaces flip logic
     }
 
-    public void resetAnimation() {
-        time = 0f;
-    }
-
-    public void renderWeapon(SpriteBatch batch, Vector2 mousePos) {
-        Weapon weapon = player.getCurrentWeapon();
-        if (weapon == null) return;
-
-        // Calculate direction to mouse
-        Vector2 playerCenter = new Vector2(
-            player.getPosX(),
-            player.getPosY()
-        );
-        Vector2 mouseDir = mousePos.cpy().sub(playerCenter);
-
-        // Update weapon position/rotation
-        weapon.updatePosition(playerCenter, mouseDir);
-
-        // Render
-        TextureRegion tex = weapon.getType().getTextureRegion();
-        batch.draw(
-            tex,
-            weapon.getPosition().x,
-            weapon.getPosition().y,
-            tex.getRegionWidth() / 2f, // Origin X
-            tex.getRegionHeight() / 2f, // Origin Y
-            tex.getRegionWidth(),
-            tex.getRegionHeight(),
-            1f, 1f,
-            weapon.getRotation()
-        );
-    }
-
-    // In PlayerController.java
-    public void handleShooting(Player player, GameWorld gameWorld, OrthographicCamera camera) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+    public void handleShooting(Player player, GameWorld gameWorld, OrthographicCamera camera)
+    {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+        {
             Weapon weapon = player.getCurrentWeapon();
-            if (weapon != null) {
-                // Convert to Vector3 with z=0
+            if (weapon != null)
+            {
                 Vector3 mouseScreenPos = new Vector3(
                     Gdx.input.getX(),
                     Gdx.input.getY(),
@@ -136,7 +104,6 @@ public class PlayerController
                 );
                 Vector3 mouseWorldPos = camera.unproject(mouseScreenPos);
 
-                // Calculate direction from WEAPON to mouse
                 Vector2 weaponPos = weapon.getPosition();
                 Vector2 direction = new Vector2(
                     mouseWorldPos.x - weaponPos.x,

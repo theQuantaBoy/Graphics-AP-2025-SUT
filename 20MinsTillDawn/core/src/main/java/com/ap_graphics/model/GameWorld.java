@@ -1,6 +1,7 @@
 package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.EnemyType;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -18,6 +19,8 @@ public class GameWorld
         return instance;
     }
 
+    private final float gameTime;
+
     private final Player player;
     private final List<WorldObject> obstacles = new ArrayList<>();
 
@@ -26,21 +29,28 @@ public class GameWorld
     private float totalGameTime = 0f;
     private float tentacleSpawnTimer = 0f;
     private float eyebatSpawnTimer = 0f;
+    private float elderSpawnTimer = 0f;
+
+    private boolean elderExists = false;
 
     private final float worldWidth, worldHeight;
 
     private ArrayList<XpOrb> xpOrbs = new ArrayList<>();
     private ArrayList<Bullet> bullets = new ArrayList<>();
+    private ArrayList<EnemyBullet> enemyBullets = new ArrayList<>();
 
     private List<FloatingText> floatingTexts = new ArrayList<>();
     private BitmapFont xpFont;
 
-    public GameWorld(Player player, float w, float h)
+    public GameWorld(Player player, float w, float h, float gameTime)
     {
         instance = this;
         this.player = player;
         this.worldWidth = w;
         this.worldHeight = h;
+        this.gameTime = gameTime;
+
+        spawnTrees(10);
 
         xpFont = new BitmapFont();
         xpFont.getData().setScale(1.5f);
@@ -51,9 +61,12 @@ public class GameWorld
         totalGameTime += delta;
         tentacleSpawnTimer += delta;
         eyebatSpawnTimer += delta;
+        elderSpawnTimer += delta;
 
-        spawnEnemies();
+        spawnEnemies(delta);
         checkCollisions(delta);
+        checkEnemyBulletCollisions(delta);
+        checkEnemyCollisions(delta);
 
         for (Enemy enemy : enemies)
         {
@@ -62,6 +75,7 @@ public class GameWorld
 
         updateOrbs(delta);
         updateFloatingTexts(delta);
+        player.updateInvincibility(delta);
     }
 
     public void render(SpriteBatch batch, float delta)
@@ -101,7 +115,13 @@ public class GameWorld
     private void spawnTentacleMonster()
     {
         Vector2 spawn = getRandomSpawnPositionOutsideCamera();
-        enemies.add(new TentacleMonster(EnemyType.TENTACLE_1, spawn.x, spawn.y));
+        if (Math.random() < 0.7f)
+        {
+            enemies.add(new TentacleMonster(EnemyType.TENTACLE_1, spawn.x, spawn.y));
+        } else
+        {
+            enemies.add(new TentacleMonster(EnemyType.TENTACLE_2, spawn.x, spawn.y));
+        }
     }
 
     private void spawnEyebat()
@@ -135,12 +155,65 @@ public class GameWorld
             while (enemyCollisionIter.hasNext())
             {
                 Enemy enemy = enemyCollisionIter.next();
-                if (enemy.getBounds().overlaps(bulletBounds))
+                if (!(enemy instanceof Tree))
                 {
-                    enemy.takeDamage(bullet.getDamage());
-                    xpOrbs.add(new XpOrb(enemy.getPosition().x, enemy.getPosition().y));
-                    enemyCollisionIter.remove();
-                    bulletIter.remove();
+                    if (enemy.getBounds().overlaps(bulletBounds))
+                    {
+                        enemy.takeDamage(bullet.getDamage());
+                        addFloatingText("-" + bullet.getDamage(), enemy.getPosition(), Color.YELLOW);
+                        if (enemy.isDead())
+                        {
+                            if (enemy instanceof Elder)
+                            {
+                                elderExists = false;
+                            }
+                            xpOrbs.add(new XpOrb(enemy.getPosition().x, enemy.getPosition().y));
+                            enemyCollisionIter.remove();
+                        }
+                        bulletIter.remove();
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void checkEnemyBulletCollisions(float delta)
+    {
+        Iterator<EnemyBullet> bulletIter = enemyBullets.iterator();
+        while (bulletIter.hasNext())
+        {
+            Bullet bullet = bulletIter.next();
+            bullet.update(delta);
+
+            if (isOffScreen(bullet.getPosition()))
+            {
+                bulletIter.remove();
+                continue;
+            }
+
+            Rectangle bulletBounds = bullet.getBounds();
+            if (player.getBounds().overlaps(bulletBounds))
+            {
+                if (player.takeDamage(bullet.getDamage()))
+                {
+                    addFloatingText("-" + bullet.getDamage(), player.getPosition(), Color.RED);
+                }
+
+                bulletIter.remove();
+            }
+        }
+    }
+
+    public void checkEnemyCollisions(float delta)
+    {
+        for (Enemy e : enemies)
+        {
+            if (e.getBounds().overlaps(player.getBounds()))
+            {
+                if (player.takeDamage(2))
+                {
+                    addFloatingText("-2", player.getPosition(), Color.RED);
                 }
             }
         }
@@ -167,9 +240,9 @@ public class GameWorld
         xpOrbs.add(orb);
     }
 
-    public void addFloatingText(String text, Vector2 position)
+    public void addFloatingText(String text, Vector2 position, Color color)
     {
-        floatingTexts.add(new FloatingText(text, position));
+        floatingTexts.add(new FloatingText(text, position, color));
     }
 
     public void renderUI(SpriteBatch batch)
@@ -183,18 +256,35 @@ public class GameWorld
         return xpOrbs;
     }
 
-    public void spawnEnemies()
+    public void spawnEnemies(float delta)
     {
         if (tentacleSpawnTimer >= 3f)
         {
-            spawnTentacleMonster();
+            for (int i = 0; i < ((delta / 30f) + 1); i++)
+            {
+                spawnTentacleMonster();
+            }
             tentacleSpawnTimer = 0f;
         }
 
-        float eyebatInterval = Math.max(4 * enemies.size() - totalGameTime + 30, 10);
-        if (eyebatSpawnTimer >= eyebatInterval) {
-            spawnEyebat();
-            eyebatSpawnTimer = 0f;
+        if (delta > (gameTime / 4f))
+        {
+            if (eyebatSpawnTimer >= 10f)
+            {
+                for (int i = 0; i < (((4 * delta - gameTime + 30)) / 30f); i++)
+                {
+                    spawnEyebat();
+                }
+            }
+        }
+
+        if (delta > (gameTime / 2f) - 90f)
+        {
+            if (!elderExists && elderSpawnTimer > 90f)
+            {
+                spawnElder();
+                elderExists = true;
+            }
         }
     }
 
@@ -209,7 +299,7 @@ public class GameWorld
             if (orb.getBounds().overlaps(player.getBounds()))
             {
                 player.gainXP(3);
-                addFloatingText("+3", new Vector2(player.getPosX(), player.getPosY()));
+                addFloatingText("+3", new Vector2(player.getPosX(), player.getPosY()), Color.GREEN);
                 orbIter.remove();
             }
 
@@ -229,6 +319,28 @@ public class GameWorld
             {
                 textIter.remove();
             }
+        }
+    }
+
+    public ArrayList<EnemyBullet> getEnemyBullets()
+    {
+        return enemyBullets;
+    }
+
+    public void spawnElder()
+    {
+        Vector2 spawn = getRandomSpawnPositionOutsideCamera();
+        enemies.add(new Elder(spawn.x, spawn.y));
+    }
+
+    private void spawnTrees(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            float x = MathUtils.random(0, worldWidth - EnemyType.TREE.getIdleAnimation().getKeyFrame(0).getRegionWidth());
+            float y = MathUtils.random(0, worldHeight - EnemyType.TREE.getIdleAnimation().getKeyFrame(0).getRegionHeight());
+            Tree tree = new Tree(x, y);
+            enemies.add(tree);
         }
     }
 }

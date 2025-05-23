@@ -29,6 +29,10 @@ public class Player
 
     private int xp = 0;
 
+    private float sinceInvincibility = 0;
+    private boolean isInvincible = false;
+    private static final float INVINCIBILITY_DURATION = 1f;
+
     public Player(String nickname, String username, String password, SecurityQuestionOptions answer, Avatar avatar)
     {
         this.nickname = nickname;
@@ -41,6 +45,21 @@ public class Player
         this.playerSprite = new Sprite(firstFrame);
         this.playerSprite.setPosition(width, height);
         setCurrentWeapon(new Weapon(WeaponType.REVOLVER));
+    }
+
+    public void updateInvincibility(float delta)
+    {
+        if (sinceInvincibility >= INVINCIBILITY_DURATION)
+        {
+            sinceInvincibility = 0;
+            isInvincible = false;
+            return;
+        }
+
+        if (isInvincible)
+        {
+            sinceInvincibility += delta;
+        }
     }
 
     public void setNickname(String nickname)
@@ -196,5 +215,17 @@ public class Player
             width,                  // Actual width
             height                  // Actual height
         );
+    }
+
+    public boolean takeDamage(int dmg)
+    {
+        if (isInvincible)
+        {
+            return false;
+        }
+
+        this.xp -= dmg;
+        isInvincible = true;
+        return true;
     }
 }

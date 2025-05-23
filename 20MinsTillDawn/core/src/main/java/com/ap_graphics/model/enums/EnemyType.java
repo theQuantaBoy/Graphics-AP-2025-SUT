@@ -51,7 +51,16 @@ public enum EnemyType
             idleRegions[i] = new TextureRegion(new Texture(idlePaths.get(i)));
         }
 
-        Animation<TextureRegion> animation = new Animation<>(0.2f, idleRegions);
+        Animation<TextureRegion> animation;
+
+        if (this == TREE)
+        {
+           animation  = new Animation<>(0.4f, idleRegions);
+        } else
+        {
+            animation = new Animation<>(0.2f, idleRegions);
+        }
+
         animation.setPlayMode(Animation.PlayMode.LOOP);
         return animation;
     }

@@ -1,14 +1,19 @@
 package com.ap_graphics.model;
 
 import com.ap_graphics.model.enums.EnemyType;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Elder extends Enemy
 {
+    private final float dashCooldown = 5f;
+    private float lastDash = 0f;
+
     public Elder(float x, float y)
     {
         super(EnemyType.ELDER_BRAIN, x, y);
         this.hp = 400;
+        this.speed = 80f;
     }
 
     @Override
@@ -18,20 +23,21 @@ public class Elder extends Enemy
     }
 
     @Override
-    public void takeDamage(int dmg) {
-        hp -= dmg;
-        if(hp <= 0) {
-            // Special death behavior for tentacle monsters
-            die();
-            // Add tentacle-specific death effects
-        }
-    }
+    public void update(float delta, Player player)
+    {
+        moveTowardPlayer(delta, player);
+        super.update(delta);
 
-    public void die() {
-        // Play death animation
-        // Spawn tentacle-specific loot
-//        super.die();
-        isDead = true;
-        GameWorld.getInstance().addXpOrb(new XpOrb(position.x, position.y));
+        lastDash += delta;
+
+        if (lastDash >= dashCooldown)
+        {
+            float originalSpeed = speed;
+            float dashMultiplier = 4f;
+            speed = originalSpeed * dashMultiplier;
+            moveTowardPlayer(delta, player);
+            speed = originalSpeed;
+            lastDash = 0f;
+        }
     }
 }
