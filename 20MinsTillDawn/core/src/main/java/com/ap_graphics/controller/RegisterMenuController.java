@@ -16,7 +16,9 @@ public class RegisterMenuController
         this.view = view;
     }
 
-    public Result onRegister(String username, String password, String name, int avatarId, SecurityQuestionOptions option)
+//    public Result register(String username, String password, int avatarId, SecurityQuestionOptions option)
+
+    public Result register(String username, String password)
     {
         if (username.isEmpty())
         {
@@ -26,11 +28,6 @@ public class RegisterMenuController
         if (password.isEmpty())
         {
             return new Result(false, "password can not be empty");
-        }
-
-        if (name.isEmpty())
-        {
-            return new Result(false, "please enter a name");
         }
 
         Player other = App.findPlayer(username);
@@ -44,7 +41,7 @@ public class RegisterMenuController
             return new Result(false, "password must be at least 8 characters");
         }
 
-        if (!hasCapitalLetter(password))
+        if (!hasCapital(password))
         {
             return new Result(false, "password must have at least one capital letter");
         }
@@ -54,22 +51,23 @@ public class RegisterMenuController
             return new Result(false, "password must have at least one digit");
         }
 
-        if (!hasSpecialCharacter(password))
+        if (!hasSpecial(password))
         {
             return new Result(false, "password must have at least one special character");
         }
 
-        if (!isNameValid(name))
-        {
-            return new Result(false, "name can only contain english letters");
-        }
-
-        Player player = new Player(name, username, password, option, Avatar.getAvatar(avatarId));
+//        Player player = new Player(username, password, option, Avatar.getAvatar(avatarId));
+        Player player = new Player(username, password);
         App.getPlayers().add(player);
         return new Result(true, "success");
     }
 
-    private boolean hasSpecialCharacter(String password)
+    public static boolean isLongEnough(String password)
+    {
+        return password != null && password.length() >= 8;
+    }
+
+    public static boolean hasSpecial(String password)
     {
         final String special = "_()*&%$#@";
 
@@ -85,7 +83,7 @@ public class RegisterMenuController
         return false;
     }
 
-    private boolean hasDigit(String password)
+    public static boolean hasDigit(String password)
     {
         final String digits = "0123456789";
 
@@ -101,7 +99,7 @@ public class RegisterMenuController
         return false;
     }
 
-    private boolean hasCapitalLetter(String password)
+    public static boolean hasCapital(String password)
     {
         final String capitals = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -117,7 +115,7 @@ public class RegisterMenuController
         return false;
     }
 
-    private boolean isNameValid(String name)
+    public boolean isNameValid(String name)
     {
         return name.matches("[a-zA-Z]+");
     }

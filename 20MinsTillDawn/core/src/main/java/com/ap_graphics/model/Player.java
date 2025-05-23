@@ -12,7 +12,6 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Player
 {
-    private String nickname;
     private String username;
     private String password;
     private Avatar avatar;
@@ -33,9 +32,19 @@ public class Player
     private boolean isInvincible = false;
     private static final float INVINCIBILITY_DURATION = 1f;
 
-    public Player(String nickname, String username, String password, SecurityQuestionOptions answer, Avatar avatar)
+    public Player(String username, String password)
     {
-        this.nickname = nickname;
+        this.username = username;
+        this.password = password;
+
+        TextureRegion firstFrame = avatar.getIdleAnimation().getKeyFrames()[0];
+        this.playerSprite = new Sprite(firstFrame);
+        this.playerSprite.setPosition(width, height);
+        setCurrentWeapon(new Weapon(WeaponType.REVOLVER));
+    }
+
+    public Player(String username, String password, SecurityQuestionOptions answer, Avatar avatar)
+    {
         this.username = username;
         this.password = password;
         this.avatar = avatar;
@@ -62,11 +71,6 @@ public class Player
         }
     }
 
-    public void setNickname(String nickname)
-    {
-        this.nickname = nickname;
-    }
-
     public void setUsername(String username)
     {
         this.username = username;
@@ -85,11 +89,6 @@ public class Player
     public void setAvatar(Avatar avatar)
     {
         this.avatar = avatar;
-    }
-
-    public String getNickname()
-    {
-        return nickname;
     }
 
     public String getUsername()

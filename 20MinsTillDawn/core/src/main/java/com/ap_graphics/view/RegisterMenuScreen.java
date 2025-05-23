@@ -114,15 +114,15 @@ public class RegisterMenuScreen implements Screen
 
                 showSecurityQuestionDialog(selectedOption ->
                 {
-                    Result result = controller.onRegister(username, password, name, avatarIndex, selectedOption);
-
-                    if (result.isSuccessful())
-                    {
-                        app.setScreen(new LoginMenuScreen(skin));
-                    } else
-                    {
-
-                    }
+//                    Result result = controller.register(username, password, name, avatarIndex, selectedOption);
+//
+//                    if (result.isSuccessful())
+//                    {
+//                        app.setScreen(new LoginMenuScreen(skin));
+//                    } else
+//                    {
+//
+//                    }
                 });
             }
         });

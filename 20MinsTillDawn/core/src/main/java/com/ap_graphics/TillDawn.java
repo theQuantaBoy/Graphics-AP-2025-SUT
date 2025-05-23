@@ -24,7 +24,6 @@ public class TillDawn extends com.badlogic.gdx.Game
 
         game = this;
         batch = new SpriteBatch();
-//        getGame().setScreen(new RegisterMenuScreen(GameAssetManager.getGameAssetManager().getSkin()));
         getGame().setScreen(new FirstMenuScreen());
     }
 

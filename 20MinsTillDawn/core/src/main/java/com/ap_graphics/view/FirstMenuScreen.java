@@ -92,7 +92,7 @@ public class FirstMenuScreen implements Screen
 
         addHoverAndClick(signUpLabel, () -> {
             System.out.println("Sign Up clicked");
-            // app.setScreen(new SignUpScreen());
+            app.setScreen(new SignUpMenuScreen());
         });
 
         addHoverAndClick(quitLabel, () -> {
@@ -195,16 +195,16 @@ public class FirstMenuScreen implements Screen
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor fromActor)
             {
-                label.setColor(Color.valueOf("f5d6c1"));
+                label.setColor(Color.valueOf("fc5060"));
             }
 
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor toActor)
             {
-                label.setColor(Color.valueOf("fc5060"));
+                label.setColor(Color.valueOf("f5d6c1"));
             }
         });
 
-        label.setColor(Color.valueOf("fc5060"));
+        label.setColor(Color.valueOf("f5d6c1"));
     }
 }
