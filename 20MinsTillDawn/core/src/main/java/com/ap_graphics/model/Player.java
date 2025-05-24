@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Random;
+
 public class Player
 {
     private String username;
@@ -32,22 +34,11 @@ public class Player
     private boolean isInvincible = false;
     private static final float INVINCIBILITY_DURATION = 1f;
 
-    public Player(String username, String password)
+    public Player(String username, String password, SecurityQuestionOptions answer)
     {
         this.username = username;
         this.password = password;
-
-        TextureRegion firstFrame = avatar.getIdleAnimation().getKeyFrames()[0];
-        this.playerSprite = new Sprite(firstFrame);
-        this.playerSprite.setPosition(width, height);
-        setCurrentWeapon(new Weapon(WeaponType.REVOLVER));
-    }
-
-    public Player(String username, String password, SecurityQuestionOptions answer, Avatar avatar)
-    {
-        this.username = username;
-        this.password = password;
-        this.avatar = avatar;
+        this.avatar = Avatar.getAvatar(new Random().nextInt(Avatar.values().length));
         this.answer = answer;
 
         TextureRegion firstFrame = avatar.getIdleAnimation().getKeyFrames()[0];

@@ -2,6 +2,8 @@ package com.ap_graphics.view;
 
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.RegisterMenuController;
+import com.ap_graphics.model.Result;
+import com.ap_graphics.model.enums.SecurityQuestionOptions;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -12,32 +14,28 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import java.util.function.Consumer;
 
 public class SignUpMenuScreen implements Screen
 {
-    private final TillDawn app;
+    private final TillDawn app = TillDawn.getGame();
     private Stage stage;
     private Texture leavesTex;
     private Image leftLeavesImage, rightLeavesImage;
     private TextField usernameField, passwordField;
     private TextButton registerButton;
     private Label feedbackLabel;
-    private CheckBox showPasswordCheckBox;
     private RegisterMenuController controller = new RegisterMenuController();
-
-    public SignUpMenuScreen()
-    {
-        this.app = TillDawn.getGame();
-    }
+    private Skin skin = new Skin(Gdx.files.internal("skins/quantum-horizon/skin/quantum-horizon-ui.json"));
 
     @Override
     public void show()
     {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
-        Skin skin = new Skin(Gdx.files.internal("skins/quantum-horizon/skin/quantum-horizon-ui.json"));
 
         leavesTex = new Texture("images/visual/T_TitleLeaves.png");
         leftLeavesImage = new Image(leavesTex);
@@ -70,22 +68,46 @@ public class SignUpMenuScreen implements Screen
         // Show password
         CheckBox.CheckBoxStyle cbStyle = skin.get(CheckBox.CheckBoxStyle.class);
         cbStyle.font = TillDawn.menuFont;
-        showPasswordCheckBox = new CheckBox(" Show password", cbStyle);
-        showPasswordCheckBox.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                passwordField.setPasswordMode(!showPasswordCheckBox.isChecked());
-            }
+
+        CheckBox.CheckBoxStyle customStyle = new CheckBox.CheckBoxStyle(cbStyle);
+        customStyle.checkboxOff = null;
+        customStyle.checkboxOn = null;
+        customStyle.font = TillDawn.menuFont;
+
+        CheckBox showPasswordCheckBox = new CheckBox("[ ] Show password", customStyle);
+
+        showPasswordCheckBox.addListener(event -> {
+            boolean checked = showPasswordCheckBox.isChecked();
+            passwordField.setPasswordMode(!checked);
+            showPasswordCheckBox.setText(checked ? "[x] Show password" : "[ ] Show password");
+            return true;
         });
 
         // Button
         TextButton.TextButtonStyle btnStyle = skin.get(TextButton.TextButtonStyle.class);
         btnStyle.font = TillDawn.menuFont;
-        registerButton = new TextButton("Sign Up", btnStyle);
-        registerButton.addListener(new ClickListener() {
+        registerButton = new TextButton("Register", btnStyle);
+
+        registerButton.addListener(new ClickListener()
+        {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                controller.register(usernameField.getText(), passwordField.getText());
+            public void clicked(InputEvent event, float x, float y)
+            {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+
+                if (controller.validUsernameAndPassword(username, password))
+                {
+                    showSecurityQuestionDialog(selectedOption ->
+                    {
+                        Result result = controller.register(username, password, selectedOption);
+
+                        if (result.isSuccessful())
+                        {
+                            app.setScreen(new LoginMenuScreen(skin));
+                        }
+                    });
+                }
             }
         });
 
@@ -93,40 +115,64 @@ public class SignUpMenuScreen implements Screen
         table.setFillParent(true);
         table.center();
 
-        table.add(usernameLabel).padBottom(5).left().row();
-        table.add(usernameField).width(300).height(45).padBottom(20).row();
-        table.add(passwordLabel).padBottom(5).left().row();
-        table.add(passwordField).width(300).height(45).padBottom(5).row();
-        table.add(feedbackLabel).padBottom(10).row();
-        table.add(showPasswordCheckBox).padBottom(20).row();
-        table.add(registerButton).width(180).height(50);
+        Label title = new Label("Sign Up", skin);
+        title.setFontScale(2.8f);
+        table.add(title).colspan(2).center().padBottom(60).padTop(40).row();
+
+        table.add(usernameLabel).right().padRight(20).padBottom(15);
+        table.add(usernameField).left().width(320).height(40).padBottom(15).padLeft(10);
+        table.row();
+
+        table.add(passwordLabel).right().padRight(20).padBottom(15);
+        table.add(passwordField).left().width(320).height(40).padBottom(15).padLeft(10);
+        table.row();
+
+        table.add(feedbackLabel).colspan(2).center().padTop(20).padBottom(40).row();
+        table.add(showPasswordCheckBox).colspan(2).center().padBottom(20);
+        table.row();
+
+        registerButton.pack(); // Ensure button sizes to text
+        float buttonWidth = registerButton.getWidth() + 40; // Add padding
+        table.add(registerButton).colspan(2).center().width(buttonWidth).height(50).padTop(10);
 
         stage.addActor(table);
 
         passwordField.setTextFieldListener((textField, c) -> updatePasswordFeedback());
     }
 
-    private void updatePasswordFeedback() {
+    private void updatePasswordFeedback()
+    {
+        String username = usernameField.getText();
         String password = passwordField.getText();
-        boolean hasDigit = RegisterMenuController.hasDigit(password);
-        boolean hasSpecial = RegisterMenuController.hasSpecial(password);
-        boolean hasCapital = RegisterMenuController.hasCapital(password);
-        boolean isLongEnough = RegisterMenuController.isLongEnough(password);
+        String errorMessage;
+        controller = new RegisterMenuController();
 
-        if (!isLongEnough) {
-            feedbackLabel.setText("Password too short");
+        if (!controller.isUnique(username)) {
+            errorMessage = "username already taken!";
             feedbackLabel.setColor(Color.RED);
-        } else if (!hasDigit || !hasSpecial || !hasCapital) {
-            feedbackLabel.setText("Password is weak");
+        } else if (!controller.isLongEnough(password)) {
+            errorMessage = "password too short!";
             feedbackLabel.setColor(Color.YELLOW);
+        } else if (!controller.hasCapital(password)) {
+            errorMessage = "password must have a capital letter!";
+            feedbackLabel.setColor(Color.RED);
+        } else if (!controller.hasDigit(password)) {
+            errorMessage = "password must have a digit!";
+            feedbackLabel.setColor(Color.RED);
+        } else if (!controller.hasSpecial(password)) {
+            errorMessage = "password must have a special character!";
+            feedbackLabel.setColor(Color.RED);
         } else {
-            feedbackLabel.setText("Password is strong");
+            errorMessage = "password is strong";
             feedbackLabel.setColor(Color.GREEN);
         }
+
+        feedbackLabel.setText(errorMessage);
     }
 
     @Override
-    public void render(float delta) {
+    public void render(float delta)
+    {
         Gdx.gl.glClearColor(0.1529f, 0.1255f, 0.1882f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -135,7 +181,8 @@ public class SignUpMenuScreen implements Screen
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(int width, int height)
+    {
         stage.getViewport().update(width, height, true);
         float leavesRatio = (float) leavesTex.getWidth() / leavesTex.getHeight();
         float leavesHeight = height;
@@ -151,8 +198,53 @@ public class SignUpMenuScreen implements Screen
     @Override public void hide() {}
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         stage.dispose();
         leavesTex.dispose();
+    }
+
+    private void showSecurityQuestionDialog(Consumer<SecurityQuestionOptions> onChoiceSelected)
+    {
+        Dialog dialog = new Dialog("Security Question", skin);
+
+        Table content = new Table();
+        content.defaults().pad(12);
+
+        Label questionLabel = new Label("Which one would you rather have?", skin);
+        questionLabel.setFontScale(1.2f);
+        content.add(questionLabel).colspan(2).center().padBottom(20).row();
+
+        for (SecurityQuestionOptions option : SecurityQuestionOptions.values())
+        {
+            Texture texture = new Texture(Gdx.files.internal(option.getPath()));
+            Image image = new Image(texture);
+            image.invalidateHierarchy();
+
+            Label label = new Label(option.getName(), skin);
+
+            TextButton button = new TextButton("Choose", skin);
+            button.addListener(new ClickListener()
+            {
+                @Override
+                public void clicked(InputEvent event, float x, float y)
+                {
+                    dialog.hide();
+                    onChoiceSelected.accept(option);
+                }
+            });
+
+            VerticalGroup group = new VerticalGroup();
+            group.space(6);
+            group.addActor(image);
+            group.addActor(label);
+            group.addActor(button);
+            group.align(Align.center);
+
+            content.add(group).pad(10);
+        }
+
+        dialog.getContentTable().add(content).center();
+        dialog.show(stage);
     }
 }
