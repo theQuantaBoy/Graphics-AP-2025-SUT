@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -104,7 +105,13 @@ public class SignUpMenuScreen implements Screen
 
                         if (result.isSuccessful())
                         {
-                            app.setScreen(new MainMenuScreen(skin));
+                            leftLeavesImage.addAction(Actions.moveTo(-leftLeavesImage.getWidth(), 0, 0.8f));
+                            rightLeavesImage.addAction(Actions.moveTo(Gdx.graphics.getWidth(), 0, 0.8f));
+
+                            stage.addAction(Actions.sequence(
+                                Actions.delay(0.85f),
+                                Actions.run(() -> app.setScreen(new MainMenuScreen()))
+                            ));
                         }
                     });
                 }

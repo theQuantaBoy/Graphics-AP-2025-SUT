@@ -87,7 +87,7 @@ public class FirstMenuScreen implements Screen
         addHoverAndClick(logInLabel, () -> {
             // TODO: Replace with your actual screen
             System.out.println("Log In clicked");
-             app.setScreen(new NewLoginMenuScreen());
+             app.setScreen(new LoginMenuScreen());
         });
 
         addHoverAndClick(signUpLabel, () -> {

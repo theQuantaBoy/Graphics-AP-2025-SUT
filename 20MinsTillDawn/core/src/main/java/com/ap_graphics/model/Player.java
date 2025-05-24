@@ -5,10 +5,12 @@ import com.ap_graphics.model.enums.Avatar;
 import com.ap_graphics.model.enums.SecurityQuestionOptions;
 import com.ap_graphics.model.enums.WeaponType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 import java.util.Random;
 
@@ -29,6 +31,7 @@ public class Player
     private Weapon currentWeapon;
 
     private int xp = 0;
+    private int score = 0;
 
     private float sinceInvincibility = 0;
     private boolean isInvincible = false;
@@ -217,5 +220,15 @@ public class Player
         this.xp -= dmg;
         isInvincible = true;
         return true;
+    }
+
+    public int getScore()
+    {
+        return score;
+    }
+
+    public Texture getImage()
+    {
+        return  new Texture(Gdx.files.internal(avatar.getPortraitPath()));
     }
 }
