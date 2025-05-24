@@ -21,6 +21,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class ProfileMenuScreen implements Screen
 {
+    private Texture leavesTex;
+    private Image leftLeavesImage, rightLeavesImage;
+
     private final TillDawn app = TillDawn.getGame();
     private final Stage stage;
     private final Skin skin;
@@ -28,7 +31,7 @@ public class ProfileMenuScreen implements Screen
     private final LoginMenuController loginController = new LoginMenuController();
     private final Table table;
     private Label feedbackLabel;
-    private final float DIALOG_FONT_SCALE = 1.4f;
+    private final float DIALOG_FONT_SCALE = 1.2f;
 
     public ProfileMenuScreen(Skin skin)
     {
@@ -43,6 +46,14 @@ public class ProfileMenuScreen implements Screen
 
         setupUI();
         setupListeners();
+
+        leavesTex = new Texture("images/visual/T_TitleLeaves.png");
+        leftLeavesImage = new Image(leavesTex);
+        TextureRegion flippedRegion = new TextureRegion(leavesTex);
+        flippedRegion.flip(true, false);
+        rightLeavesImage = new Image(flippedRegion);
+        stage.addActor(leftLeavesImage);
+        stage.addActor(rightLeavesImage);
     }
 
     private void setupUI()
@@ -70,8 +81,8 @@ public class ProfileMenuScreen implements Screen
     private TextButton addMenuButton(String text, float width, float height)
     {
         TextButton button = new TextButton(text, skin);
-        button.getLabel().setFontScale(1.3f);
-        table.add(button).width(width).height(height).row();
+        button.getLabel().setFontScale(1.2f);
+        table.add(button).width(width + 40).height(height).row();
         return button;
     }
 
@@ -127,7 +138,6 @@ public class ProfileMenuScreen implements Screen
     private void showChangeFieldDialog(String title, String labelText, boolean isUsername)
     {
         final TextField field = new TextField("", skin);
-        field.setMessageText("Enter new " + (isUsername ? "username" : "password"));
         field.getStyle().font.getData().setScale(DIALOG_FONT_SCALE);
 
         final Label errorLabel = new Label("", skin);
@@ -204,11 +214,7 @@ public class ProfileMenuScreen implements Screen
 
     private void validateUsername(String input, Label errorLabel)
     {
-        if (input.length() < 4)
-        {
-            errorLabel.setText("Input too short (min 4 characters)!");
-            errorLabel.setColor(Color.RED);
-        } else if (!registerController.isUnique(input))
+        if (!registerController.isUnique(input))
         {
             errorLabel.setText("Username already taken!");
             errorLabel.setColor(Color.RED);
@@ -372,8 +378,9 @@ public class ProfileMenuScreen implements Screen
 
     @Override public void render(float delta)
     {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+        Gdx.gl.glClearColor(0.1529f, 0.1255f, 0.1882f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         stage.act(delta);
         stage.draw();
     }
@@ -381,6 +388,13 @@ public class ProfileMenuScreen implements Screen
     @Override public void resize(int width, int height)
     {
         stage.getViewport().update(width, height, true);
+        float leavesRatio = (float) leavesTex.getWidth() / leavesTex.getHeight();
+        float leavesHeight = height;
+        float leavesWidth = leavesHeight * leavesRatio;
+        leftLeavesImage.setSize(leavesWidth, leavesHeight);
+        leftLeavesImage.setPosition(0, 0);
+        rightLeavesImage.setSize(leavesWidth, leavesHeight);
+        rightLeavesImage.setPosition(width - leavesWidth, 0);
     }
 
     @Override public void pause() {}
@@ -389,5 +403,9 @@ public class ProfileMenuScreen implements Screen
 
     @Override public void hide() {}
 
-    @Override public void dispose() { stage.dispose(); }
+    @Override public void dispose()
+    {
+        stage.dispose();
+        if (leavesTex != null) leavesTex.dispose();
+    }
 }

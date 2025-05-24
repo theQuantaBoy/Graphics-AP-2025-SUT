@@ -185,7 +185,7 @@ public class MainMenuScreen implements Screen
         rightCol.row();
         rightCol.add(profileButton).width(180).height(50).center();
 
-        root.add(leftSide).top().left().expandX();
+        root.add(leftSide.padTop(50)).top().left().expandX();
         root.add(rightCol).center().expand();
     }
 
