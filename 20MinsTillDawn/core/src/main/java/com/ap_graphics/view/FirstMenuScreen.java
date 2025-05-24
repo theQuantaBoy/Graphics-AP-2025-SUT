@@ -46,7 +46,7 @@ public class FirstMenuScreen implements Screen
         eyeTex3 = new Texture("images/visual/eye_blink/T_EyeBlink_2.png");
 
         eyeBlinkAnimation = new Animation<>(
-            0.18f,
+            0.12f,
             new TextureRegion(eyeTex1),
             new TextureRegion(eyeTex1),
             new TextureRegion(eyeTex1),
@@ -87,7 +87,7 @@ public class FirstMenuScreen implements Screen
         addHoverAndClick(logInLabel, () -> {
             // TODO: Replace with your actual screen
             System.out.println("Log In clicked");
-            // app.setScreen(new LogInScreen());
+             app.setScreen(new NewLoginMenuScreen());
         });
 
         addHoverAndClick(signUpLabel, () -> {

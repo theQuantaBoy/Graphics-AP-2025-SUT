@@ -47,6 +47,7 @@ public class RegisterMenuController
 
         Player player = new Player(username, password, options);
         App.getPlayers().add(player);
+        App.setCurrentPlayer(player);
         return new Result(true, "success");
     }
 

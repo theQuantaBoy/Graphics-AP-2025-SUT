@@ -3,6 +3,7 @@ package com.ap_graphics.view;
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.LoginMenuController;
 import com.ap_graphics.controller.MainMenuController;
+import com.ap_graphics.model.App;
 import com.ap_graphics.model.Result;
 import com.ap_graphics.model.enums.Avatar;
 import com.badlogic.gdx.Game;
@@ -82,7 +83,8 @@ public class MainMenuScreen implements Screen
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                app.setScreen(new ScoreBoardMenuScreen(skin));
+                App.setCurrentPlayer(null);
+                app.setScreen(new NewLoginMenuScreen());
             }
         });
 

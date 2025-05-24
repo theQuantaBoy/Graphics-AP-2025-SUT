@@ -25,7 +25,7 @@ public class LoginMenuController
         return new Result(true, "logged in successfully");
     }
 
-    public Result validSecurityQuestion(String username, String password, SecurityQuestionOptions answer)
+    public Result validSecurityQuestion(String username, SecurityQuestionOptions answer)
     {
         Player player = App.findPlayer(username);
 
@@ -39,33 +39,12 @@ public class LoginMenuController
             return new Result(false, "wrong answer");
         }
 
-        if (player.getPassword().equals(password))
-        {
-            return new Result(false, "new password can not be the same as the old password");
-        }
-
-        if (password.length() < 8)
-        {
-            return new Result(false, "new password must be at least 8 characters");
-        }
-
-        if (!hasCapitalLetter(password))
-        {
-            return new Result(false, "new password must have at least one capital letter");
-        }
-
-        if (!hasDigit(password))
-        {
-            return new Result(false, "new password must have at least one digit");
-        }
-
-        if (!hasSpecialCharacter(password))
-        {
-            return new Result(false, "new password must have at least one special character");
-        }
-
-        player.setPassword(password);
         return new Result(true, "password changed successfully");
+    }
+
+    private boolean isLongEnough(String password)
+    {
+        return password != null && password.length() >= 8;
     }
 
     private boolean hasSpecialCharacter(String password)
@@ -114,5 +93,43 @@ public class LoginMenuController
         }
 
         return false;
+    }
+
+    public boolean setPassword(String username, String password)
+    {
+        Player player = App.findPlayer(username);
+        if (player == null)
+        {
+            return false;
+        }
+
+        if (!validPassword(password))
+        {
+            return false;
+        }
+
+        player.setPassword(password);
+        return true;
+    }
+
+    public boolean validPassword(String password)
+    {
+        return isLongEnough(password) && hasSpecialCharacter(password) && hasDigit(password) && hasCapitalLetter(password);
+    }
+
+    public boolean correctPassword(String username, String password)
+    {
+        Player player = App.findPlayer(username);
+        if (player == null)
+        {
+            return false;
+        }
+
+        if (!player.getPassword().equals(password))
+        {
+            return false;
+        }
+
+        return true;
     }
 }
