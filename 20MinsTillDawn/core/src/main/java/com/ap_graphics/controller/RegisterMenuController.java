@@ -133,4 +133,22 @@ public class RegisterMenuController
 
         return true;
     }
+
+    public boolean updateUsername(String oldUsername, String newUsername)
+    {
+        if (newUsername.isEmpty() || !isUnique(newUsername))
+        {
+            return false;
+        }
+
+        Player existingUser = App.findPlayer(oldUsername);
+        if (existingUser == null)
+        {
+            return false;
+        }
+
+        existingUser.setUsername(newUsername);
+
+        return true;
+    }
 }
