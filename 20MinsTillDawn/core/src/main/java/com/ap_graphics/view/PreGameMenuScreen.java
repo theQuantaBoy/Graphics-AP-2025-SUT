@@ -32,7 +32,7 @@ public class PreGameMenuScreen implements Screen
 
     private int heroIndex = Avatar.getIndex(player.getAvatar());
     private int weaponIndex = WeaponType.getIndex(player.getCurrentWeapon().getType());
-    private int timeIndex = 0;
+    private int timeIndex = 3;
     private final int[] timeOptions = {2, 5, 10, 20};
 
     private Label heroLabel;
@@ -145,6 +145,20 @@ public class PreGameMenuScreen implements Screen
         });
 
         TextButton startButton = new TextButton("Start New Game", skin);
+        startButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                leftLeavesImage.addAction(Actions.moveTo(-leftLeavesImage.getWidth(), 0, 0.8f));
+                rightLeavesImage.addAction(Actions.moveTo(Gdx.graphics.getWidth(), 0, 0.8f));
+
+                stage.addAction(Actions.sequence(
+                    Actions.delay(0.85f),
+                    Actions.run(() -> app.setScreen(new GameMenuScreen(skin)))
+                ));
+            }
+        });
 
         TextButton backButton = new TextButton("Go Back", skin);
         backButton.addListener(new ClickListener() {

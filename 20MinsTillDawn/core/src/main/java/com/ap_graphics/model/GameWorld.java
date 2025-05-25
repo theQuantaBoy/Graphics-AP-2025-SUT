@@ -1,13 +1,19 @@
 package com.ap_graphics.model;
 
 import com.ap_graphics.model.combat.*;
+import com.ap_graphics.model.enums.AbilityType;
 import com.ap_graphics.model.enums.EnemyType;
+import com.ap_graphics.model.enums.GameAnimationType;
+import com.ap_graphics.view.ChooseAbilityDialog;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.*;
 
@@ -43,6 +49,14 @@ public class GameWorld
     private List<FloatingText> floatingTexts = new ArrayList<>();
     private BitmapFont xpFont;
 
+    List<GameAnimation> animations = new ArrayList<>();
+    GameAnimation reloadAnimation = null;
+
+    private boolean paused = false;
+
+    private Stage uiStage;
+    private Skin uiSkin;
+
     public GameWorld(Player player, float w, float h, float gameTime)
     {
         instance = this;
@@ -57,12 +71,30 @@ public class GameWorld
         xpFont.getData().setScale(1.5f);
     }
 
+    public void setUIContext(Stage stage, Skin skin)
+    {
+        this.uiStage = stage;
+        this.uiSkin = skin;
+    }
+
     public void update(float delta)
     {
+        if (paused) return;
+
         totalGameTime += delta;
         tentacleSpawnTimer += delta;
         eyebatSpawnTimer += delta;
         elderSpawnTimer += delta;
+
+        if (player.shouldShowAbilityScreen())
+        {
+            pause();
+            AbilityType[] abilities = AbilityType.randomThree();
+
+            ChooseAbilityDialog dialog = new ChooseAbilityDialog(uiStage, uiSkin, abilities);
+
+            uiStage.addActor(dialog);
+        }
 
         spawnEnemies(delta);
         checkCollisions(delta);
@@ -77,6 +109,8 @@ public class GameWorld
         updateOrbs(delta);
         updateFloatingTexts(delta);
         player.updateInvincibility(delta);
+        player.getCurrentWeapon().update(delta);
+        updateAnimations(delta);
     }
 
     public void render(SpriteBatch batch, float delta)
@@ -169,6 +203,7 @@ public class GameWorld
                                 elderExists = false;
                             }
                             xpOrbs.add(new XpOrb(enemy.getPosition().x, enemy.getPosition().y));
+                            animations.add(new GameAnimation(GameAnimationType.TENTACLE_DEATH, enemy.getPosition()));
                             enemyCollisionIter.remove();
                         }
                         bulletIter.remove();
@@ -250,6 +285,8 @@ public class GameWorld
     {
         xpFont.setColor(1, 1, 0, 1); // Reset color before drawing
         floatingTexts.forEach(text -> text.render(batch, xpFont));
+        drawAnimations(batch);
+        drawWeapon(batch);
     }
 
     public ArrayList<XpOrb> getXpOrbs()
@@ -344,4 +381,58 @@ public class GameWorld
             enemies.add(tree);
         }
     }
+
+    public int getRemainingTime()
+    {
+        return Math.max(0, (int) gameTime - (int) totalGameTime);
+    }
+
+    public void updateAnimations(float delta)
+    {
+        for (Iterator<GameAnimation> it = animations.iterator(); it.hasNext(); ) {
+            GameAnimation a = it.next();
+            a.update(delta);
+            if (a.isFinished()) it.remove();
+        }
+    }
+
+    public void drawAnimations(SpriteBatch batch)
+    {
+        for (GameAnimation a : animations)
+        {
+            a.render(batch);
+        }
+    }
+
+    public void drawWeapon(SpriteBatch batch)
+    {
+        Weapon weapon = player.getCurrentWeapon();
+//        if (!weapon.isReloading())
+//        {
+            TextureRegion weaponTex = player.getCurrentWeapon().getType().getTextureRegion();
+            Vector2 weaponPos = player.getCurrentWeapon().getPosition();
+
+            batch.draw(
+                weaponTex,
+                weaponPos.x,
+                weaponPos.y,
+                weaponTex.getRegionWidth() / 2f,
+                weaponTex.getRegionHeight() / 2f,
+                weaponTex.getRegionWidth(),
+                weaponTex.getRegionHeight(),
+                1f,
+                1f,
+                player.getCurrentWeapon().getRotation()
+            );
+//        } else
+//        {
+//
+//        }
+    }
+
+    public void pause() { paused = true; }
+
+    public void resume() { paused = false; }
+
+    public boolean isPaused() { return paused; }
 }

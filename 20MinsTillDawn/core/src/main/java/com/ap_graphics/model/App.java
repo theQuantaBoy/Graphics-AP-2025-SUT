@@ -6,6 +6,7 @@ public class App
 {
     private static Player currentPlayer;
     private static ArrayList<Player> players = new ArrayList<>();
+    private static GameWorld game;
 
     public static Player findPlayer(String username)
     {
@@ -33,5 +34,15 @@ public class App
     public static Player getCurrentPlayer()
     {
         return currentPlayer;
+    }
+
+    public static GameWorld getGame()
+    {
+        return game;
+    }
+
+    public static void setGame(GameWorld game)
+    {
+        App.game = game;
     }
 }

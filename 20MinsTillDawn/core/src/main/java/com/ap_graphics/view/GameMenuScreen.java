@@ -24,8 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class IdleAnimationMenuScreen implements Screen
-{
+public class GameMenuScreen implements Screen {
     private final Stage stage;
     private final Skin skin;
     private final SpriteBatch batch;
@@ -36,12 +35,11 @@ public class IdleAnimationMenuScreen implements Screen
     private Texture background;
 
     private final Player player;
-    private Label timerLabel;
+    private Label timerLabel, ammoLabel, xpLabel, levelLabel, hpLabel;
 
     private CursorManager cursorManager;
 
-    public IdleAnimationMenuScreen(Skin skin)
-    {
+    public GameMenuScreen(Skin skin) {
         this.skin = skin;
         this.stage = new Stage(new ScreenViewport());
         this.batch = new SpriteBatch();
@@ -50,17 +48,29 @@ public class IdleAnimationMenuScreen implements Screen
         this.playerController = new PlayerController(App.getCurrentPlayer(), background);
 
         this.player = App.getCurrentPlayer();
-        this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight(), 240);
+
+        this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight(), player.getCurrentGameDuration() * 60);
+        App.setGame(gameWorld);
+
+        GameWorld.getInstance().setUIContext(stage, skin);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        timerLabel = new Label("Time: 0", skin);
+        timerLabel = new Label("", skin);
+        ammoLabel = new Label("", skin);
+        xpLabel = new Label("", skin);
+        levelLabel = new Label("", skin);
+        hpLabel = new Label("", skin);
 
         Table uiTable = new Table();
         uiTable.top().left();
         uiTable.setFillParent(true);
-        uiTable.add(timerLabel).pad(20).row();
+        uiTable.add(timerLabel).pad(10).left().row();
+        uiTable.add(ammoLabel).pad(10).left().row();
+        uiTable.add(xpLabel).pad(10).left().row();
+        uiTable.add(levelLabel).pad(10).left().row();
+        uiTable.add(hpLabel).pad(10).left().row();
         stage.addActor(uiTable);
 
         cursorManager = new CursorManager();
@@ -74,8 +84,7 @@ public class IdleAnimationMenuScreen implements Screen
     }
 
     @Override
-    public void show()
-    {
+    public void show() {
         Gdx.input.setInputProcessor(stage);
 
         Player player = App.getCurrentPlayer();
@@ -83,8 +92,7 @@ public class IdleAnimationMenuScreen implements Screen
     }
 
     @Override
-    public void render(float delta)
-    {
+    public void render(float delta) {
         Player player = App.getCurrentPlayer();
 
         camera.position.set(player.getPosX(), player.getPosY(), 0);
@@ -101,65 +109,56 @@ public class IdleAnimationMenuScreen implements Screen
 
         gameWorld.update(delta);
 
-        timerLabel.setText("Time: " + (int) gameWorld.getTotalGameTime());
+        int remaining = gameWorld.getRemainingTime();
+        int minutes = remaining / 60;
+        int seconds = remaining % 60;
+        timerLabel.setText("Time: " + String.format("%02d:%02d", minutes, seconds));
+
+        if (player.getCurrentWeapon() != null) {
+            int currentAmmo = player.getCurrentWeapon().getCurrentAmmo();
+            int maxAmmo = player.getCurrentWeapon().getType().getMaxAmmo();
+            ammoLabel.setText("Ammo: " + currentAmmo + " / " + maxAmmo);
+        }
+
+        xpLabel.setText("XP: " + player.getXp());
+        levelLabel.setText("Level: " + player.getLevel());
+        hpLabel.setText("HP: " + player.getCurrentHP() + " / " + player.getMaxHP());
 
         Vector3 mouseScreenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         Vector3 mouseWorldPos = camera.unproject(mouseScreenPos);
 
-        if (player.getCurrentWeapon() != null)
-        {
+        if (player.getCurrentWeapon() != null) {
             Vector2 playerPos = new Vector2(player.getPosX(), player.getPosY());
             Vector2 mouseDir = new Vector2(mouseWorldPos.x - playerPos.x, mouseWorldPos.y - playerPos.y);
             player.getCurrentWeapon().updatePosition(playerPos, mouseDir);
         }
 
-        playerController.handleShooting(player, gameWorld, camera);
+        if (!App.getGame().isPaused()) {
+            playerController.handleShooting(player, gameWorld, camera);
 
-        playerController.update(delta, batch);
+            playerController.update(delta, batch);
 
-        if (player.getCurrentWeapon() != null)
-        {
-            TextureRegion weaponTex = player.getCurrentWeapon().getType().getTextureRegion();
-            Vector2 weaponPos = player.getCurrentWeapon().getPosition();
+            for (Enemy enemy : gameWorld.getEnemies()) {
+                enemy.render(batch, delta);
+            }
 
-            batch.draw(
-                weaponTex,
-                weaponPos.x,
-                weaponPos.y,
-                weaponTex.getRegionWidth() / 2f,
-                weaponTex.getRegionHeight() / 2f,
-                weaponTex.getRegionWidth(),
-                weaponTex.getRegionHeight(),
-                1f,
-                1f,
-                player.getCurrentWeapon().getRotation()
-            );
+            for (Bullet bullet : gameWorld.getBullets()) {
+                bullet.render(batch);
+            }
+
+            for (EnemyBullet bullet : gameWorld.getEnemyBullets()) {
+                bullet.render(batch);
+            }
+
+            for (XpOrb orb : gameWorld.getXpOrbs()) {
+                orb.render(batch);
+            }
+
+            gameWorld.renderUI(batch);
+
+            boolean isMouseDown = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+            cursorManager.update(isMouseDown);
         }
-
-        for (Enemy enemy : gameWorld.getEnemies())
-        {
-            enemy.render(batch, delta);
-        }
-
-        for (Bullet bullet : gameWorld.getBullets())
-        {
-            bullet.render(batch);
-        }
-
-        for (EnemyBullet bullet : gameWorld.getEnemyBullets())
-        {
-            bullet.render(batch);
-        }
-
-        for (XpOrb orb : gameWorld.getXpOrbs())
-        {
-            orb.render(batch);
-        }
-
-        gameWorld.renderUI(batch);
-
-        boolean isMouseDown = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
-        cursorManager.update(isMouseDown);
 
         batch.end();
 
@@ -168,8 +167,7 @@ public class IdleAnimationMenuScreen implements Screen
     }
 
     @Override
-    public void resize(int width, int height)
-    {
+    public void resize(int width, int height) {
         camera.setToOrtho(false, width, height);
         stage.getViewport().update(width, height, true);
     }
@@ -184,8 +182,7 @@ public class IdleAnimationMenuScreen implements Screen
     public void hide() {}
 
     @Override
-    public void dispose()
-    {
+    public void dispose() {
         stage.dispose();
         cursorManager.dispose();
         batch.dispose();

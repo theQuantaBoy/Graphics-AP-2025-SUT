@@ -93,26 +93,41 @@ public class PlayerController
             Weapon weapon = player.getCurrentWeapon();
             if (weapon != null)
             {
-                Vector3 mouseScreenPos = new Vector3(
-                    Gdx.input.getX(),
-                    Gdx.input.getY(),
-                    0
-                );
-                Vector3 mouseWorldPos = camera.unproject(mouseScreenPos);
+               if (weapon.shoot())
+               {
+                   Vector3 mouseScreenPos = new Vector3(
+                       Gdx.input.getX(),
+                       Gdx.input.getY(),
+                       0
+                   );
+                   Vector3 mouseWorldPos = camera.unproject(mouseScreenPos);
 
-                Vector2 weaponPos = weapon.getPosition();
-                Vector2 direction = new Vector2(
-                    mouseWorldPos.x - weaponPos.x,
-                    mouseWorldPos.y - weaponPos.y
-                ).nor();
+                   Vector2 weaponPos = weapon.getPosition();
+                   Vector2 direction = new Vector2(
+                       mouseWorldPos.x - weaponPos.x,
+                       mouseWorldPos.y - weaponPos.y
+                   ).nor();
 
-                gameWorld.addBullet(new Bullet(
-                    weaponPos.x,
-                    weaponPos.y,
-                    direction,
-                    weapon.getType().getDamage()
-                ));
+                   gameWorld.addBullet(new Bullet(
+                       weaponPos.x,
+                       weaponPos.y,
+                       direction,
+                       weapon.getType().getDamage()
+                   ));
+               } else
+               {
+                   if (!weapon.isReloading() && player.isAutoReloadEnabled())
+                   {
+                       weapon.startReloading();
+                   }
+               }
             }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R))
+        {
+            Weapon weapon = player.getCurrentWeapon();
+            weapon.startReloading();
         }
     }
 }

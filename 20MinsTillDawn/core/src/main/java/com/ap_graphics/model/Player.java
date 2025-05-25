@@ -1,17 +1,13 @@
 package com.ap_graphics.model;
 
 import com.ap_graphics.model.combat.Weapon;
-import com.ap_graphics.model.enums.Avatar;
-import com.ap_graphics.model.enums.MusicPlaylist;
-import com.ap_graphics.model.enums.SecurityQuestionOptions;
-import com.ap_graphics.model.enums.WeaponType;
+import com.ap_graphics.model.enums.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 import java.util.Random;
 
@@ -26,12 +22,15 @@ public class Player
     private float width = (float) Gdx.graphics.getWidth() / 2;
     private float height = (float) Gdx.graphics.getHeight() / 2;
     private float speed = 1.25f;
+    private float speedMultiplier = 1f;
     private Sprite playerSprite;
 
     private boolean isHeadedRight = true;
     private Weapon currentWeapon;
 
+    private int hp = 50;
     private int xp = 0;
+    private int level = 1;
     private int score = 0;
 
     private float sinceInvincibility = 0;
@@ -46,9 +45,15 @@ public class Player
     private int selectedPlaylist = 0; // 0 = TAYLOR_SWIFT, 1 = UNDERTALE
 
     private boolean autoAimEnabled = true;
+    private boolean autoReloadEnabled = false;
     private boolean blackAndWhiteMode = false;
 
     private int currentGameDuration = 20;
+
+    private AbilityType abilityType = null;
+    private boolean shouldShowAbilityScreen = false;
+
+    private boolean isDead = false;
 
     public Player(String username, String password, SecurityQuestionOptions answer)
     {
@@ -61,6 +66,9 @@ public class Player
         this.playerSprite = new Sprite(firstFrame);
         this.playerSprite.setPosition(width, height);
         setCurrentWeapon(new Weapon(WeaponType.REVOLVER));
+
+        this.hp = avatar.getHp() * 10;
+        this.speedMultiplier = avatar.getSpeedMultiplier();
     }
 
     public void updateInvincibility(float delta)
@@ -96,6 +104,8 @@ public class Player
     public void setAvatar(Avatar avatar)
     {
         this.avatar = avatar;
+        this.hp = avatar.getHp() * 10;
+        this.speedMultiplier = avatar.getSpeedMultiplier();
     }
 
     public String getUsername()
@@ -200,6 +210,12 @@ public class Player
     public void gainXP(int xp)
     {
         this.xp += xp;
+        if (this.xp >= ((level + 1) * 20))
+        {
+            this.xp = this.xp - ((level + 1) * 20);
+            level += 1;
+            shouldShowAbilityScreen = true;
+        }
     }
 
     public Vector2 getPosition()
@@ -230,9 +246,20 @@ public class Player
             return false;
         }
 
-        this.xp -= dmg;
+        this.hp -= dmg;
+
+        if (hp <= 0)
+        {
+            isDead = true;
+        }
+
         isInvincible = true;
         return true;
+    }
+
+    public int getHp()
+    {
+        return hp / 10;
     }
 
     public int getScore()
@@ -328,5 +355,56 @@ public class Player
     public void setCurrentGameDuration(int currentGameDuration)
     {
         this.currentGameDuration = currentGameDuration;
+    }
+
+    public boolean isAutoReloadEnabled()
+    {
+        return autoReloadEnabled;
+    }
+
+    public void setAutoReloadEnabled(boolean autoReloadEnabled)
+    {
+        this.autoReloadEnabled = autoReloadEnabled;
+    }
+
+    public AbilityType getAbility()
+    {
+        return abilityType;
+    }
+
+    public void setAbility(AbilityType abilityType)
+    {
+        this.abilityType = abilityType;
+        shouldShowAbilityScreen = false;
+    }
+
+    public boolean shouldShowAbilityScreen()
+    {
+        return shouldShowAbilityScreen;
+    }
+
+    public boolean isDead()
+    {
+        return isDead;
+    }
+
+    public int getXp()
+    {
+        return xp;
+    }
+
+    public int getLevel()
+    {
+        return level;
+    }
+
+    public int getCurrentHP()
+    {
+        return hp / 10;
+    }
+
+    public int getMaxHP()
+    {
+        return avatar.getHp() * 10;
     }
 }

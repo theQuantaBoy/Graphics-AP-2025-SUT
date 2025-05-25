@@ -1,5 +1,9 @@
 package com.ap_graphics.model.combat;
 
+import com.ap_graphics.controller.SoundManager;
+import com.ap_graphics.model.App;
+import com.ap_graphics.model.Player;
+import com.ap_graphics.model.enums.SoundEffectType;
 import com.ap_graphics.model.enums.WeaponType;
 import com.badlogic.gdx.math.Vector2;
 
@@ -12,11 +16,13 @@ public class Weapon
     private int projectiles;
     private int damage;
     private int currentAmmo;
-    private boolean isReloading;
+    private boolean isReloading = false;
 
     private Vector2 position = new Vector2();
     private float rotation;
     private final Vector2 offset; // Distance from player center
+
+    private float reloadTimer = 0f;
 
     public Weapon(WeaponType type)
     {
@@ -32,24 +38,47 @@ public class Weapon
         isReloading = false;
     }
 
-    public boolean shoot()
+    public void update(float delta)
     {
-        // TODO: commented for debugging
-//        if (currentAmmo > 0 && !isReloading)
-//        {
-            currentAmmo -= 1;
-            return true;
-//        }
+        if (isReloading)
+        {
+            reloadTimer -= delta;
+            if (reloadTimer <= 0)
+            {
+                currentAmmo = type.getMaxAmmo();
+                isReloading = false;
+                SoundManager.getInstance().playSFX(SoundEffectType.WEAPON_SHOTGUN_RELOAD);
+            }
+        }
 
-//        return false;
+        if (currentAmmo <= 0 && !isReloading)
+        {
+            Player player = App.getCurrentPlayer();
+            if (player != null && player.isAutoReloadEnabled())
+            {
+                isReloading = true;
+                reloadTimer = reloadTime;
+            }
+        }
     }
 
-    public void reload()
+    public void startReloading()
     {
-        isReloading = true;
-        // TODO: Simulate reload delay (use LibGDX Timer)
-        currentAmmo = maxAmmo;
-        isReloading = false;
+        if (!isReloading) {
+            isReloading = true;
+            reloadTimer = reloadTime;
+        }
+    }
+
+    public boolean shoot()
+    {
+        if (currentAmmo > 0 && !isReloading)
+        {
+            currentAmmo -= 1;
+            return true;
+        }
+
+        return false;
     }
 
     public WeaponType getType()
@@ -57,7 +86,8 @@ public class Weapon
         return type;
     }
 
-    public void updatePosition(Vector2 playerPosition, Vector2 mouseDirection) {
+    public void updatePosition(Vector2 playerPosition, Vector2 mouseDirection)
+    {
         // Calculate direction-based offset
         Vector2 dir = mouseDirection.cpy().nor();
         position.set(
@@ -70,5 +100,16 @@ public class Weapon
     }
 
     public Vector2 getPosition() { return position; }
+
     public float getRotation() { return rotation; }
+
+    public boolean isReloading()
+    {
+        return isReloading;
+    }
+
+    public int getCurrentAmmo()
+    {
+        return currentAmmo;
+    }
 }

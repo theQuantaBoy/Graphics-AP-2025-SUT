@@ -164,15 +164,15 @@ public class SettingsMenuScreen implements Screen
         content.add(sfxToggle).colspan(4);
         content.row();
 
-        CheckBox autoAimToggle = new CheckBox("Enable Auto-Aim", skin);
-        autoAimToggle.setStyle(checkboxStyle);
-        autoAimToggle.setChecked(player.isAutoAimEnabled());
-        autoAimToggle.addListener(e ->
+        CheckBox autoReloadToggle = new CheckBox("Enable Auto-Reload", skin);
+        autoReloadToggle.setStyle(checkboxStyle);
+        autoReloadToggle.setChecked(player.isAutoReloadEnabled());
+        autoReloadToggle.addListener(e ->
         {
-            player.setAutoAimEnabled(autoAimToggle.isChecked());
+            player.setAutoReloadEnabled(autoReloadToggle.isChecked());
             return false;
         });
-        content.add(autoAimToggle).colspan(4);
+        content.add(autoReloadToggle).colspan(4);
         content.row();
 
         CheckBox bwToggle = new CheckBox("Black & White Mode", skin);
