@@ -163,7 +163,7 @@ public class FirstMenuScreen implements Screen
     @Override
     public void show()
     {
-        SoundManager.getInstance().playMusic(App.getCurrentPlayer());
+        SoundManager.getInstance().playLoopingSFX();
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.ap_graphics.view;
 
+import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.AbilityType;
 import com.ap_graphics.model.enums.GameAnimationType;
+import com.ap_graphics.model.enums.SoundEffectType;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -58,6 +60,8 @@ public class ChooseAbilityDialog extends Window {
 
         Table table = new Table();
         table.center();
+        SoundManager.getInstance().playSFX(SoundEffectType.DRUM_ROLL_3);
+        SoundManager.getInstance().playSFX(SoundEffectType.SPECIAL_AND_POWERUP_8);
 
         for (int i = 0; i < 3; i++) {
             final AbilityType ability = abilities[i];

@@ -52,7 +52,6 @@ public class Weapon
             {
                 currentAmmo = type.getMaxAmmo();
                 isReloading = false;
-                SoundManager.getInstance().playSFX(SoundEffectType.WEAPON_SHOTGUN_RELOAD);
 
                 GameWorld gameWorld = App.getGame();
                 gameWorld.getAttachedAnimations().remove(reloadAnimation);
@@ -67,6 +66,7 @@ public class Weapon
             {
                 isReloading = true;
                 reloadTimer = reloadTime;
+                SoundManager.getInstance().playSFX(SoundEffectType.WEAPON_SHOTGUN_RELOAD);
 
                 GameWorld gameWorld = App.getGame();
                 AttachedAnimation animation = new AttachedAnimation(GameAnimationType.RELOAD, false, 1.5f);
@@ -82,6 +82,7 @@ public class Weapon
         {
             isReloading = true;
             reloadTimer = reloadTime;
+            SoundManager.getInstance().playSFX(SoundEffectType.WEAPON_SHOTGUN_RELOAD);
 
             GameWorld gameWorld = App.getGame();
             AttachedAnimation animation = new AttachedAnimation(GameAnimationType.RELOAD, false, 1.5f);

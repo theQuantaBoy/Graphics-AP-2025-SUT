@@ -1,9 +1,11 @@
 package com.ap_graphics.model;
 
+import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.combat.*;
 import com.ap_graphics.model.enums.AbilityType;
 import com.ap_graphics.model.enums.EnemyType;
 import com.ap_graphics.model.enums.GameAnimationType;
+import com.ap_graphics.model.enums.SoundEffectType;
 import com.ap_graphics.view.ChooseAbilityDialog;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -201,6 +203,7 @@ public class GameWorld
                     if (enemy.getBounds().overlaps(bulletBounds))
                     {
                         enemy.takeDamage(bullet.getDamage());
+                        SoundManager.getInstance().playSFX(SoundEffectType.BLOOD_SPLASH_QUICK_01);
                         enemy.moveAwayFromPlayer(delta, player);
                         addFloatingText("-" + bullet.getDamage(), enemy.getPosition(), Color.YELLOW);
                         if (enemy.isDead())
@@ -209,6 +212,7 @@ public class GameWorld
                             {
                                 elderExists = false;
                             }
+                            SoundManager.getInstance().playSFX(SoundEffectType.EXPLOSION_BLOOD_01);
                             xpOrbs.add(new XpOrb(enemy.getPosition().x, enemy.getPosition().y));
                             animations.add(new GameAnimation(GameAnimationType.TENTACLE_DEATH, enemy.getPosition()));
                             enemyCollisionIter.remove();
@@ -240,6 +244,7 @@ public class GameWorld
             {
                 if (player.takeDamage(bullet.getDamage()))
                 {
+                    SoundManager.getInstance().playSFX(SoundEffectType.DEBUFF_SPEED);
                     addFloatingText("-" + bullet.getDamage(), player.getPosition(), Color.RED);
                     attachedAnimations.add(new AttachedAnimation(GameAnimationType.HERO_DAMAGE, true, 1.2f));
                 }
@@ -257,6 +262,7 @@ public class GameWorld
             {
                 if (player.takeDamage(2))
                 {
+                    SoundManager.getInstance().playSFX(SoundEffectType.DEBUFF_SPEED);
                     addFloatingText("-2", player.getPosition(), Color.RED);
                 }
             }
@@ -272,6 +278,7 @@ public class GameWorld
     public void addBullet(Bullet bullet)
     {
         bullets.add(bullet);
+        SoundManager.getInstance().playSFX(SoundEffectType.STANDARD_WEAPON_WHOOSH_01);
     }
 
     public ArrayList<Bullet> getBullets()
@@ -330,7 +337,6 @@ public class GameWorld
             if (!elderExists && elderSpawnTimer > 90f)
             {
                 spawnElder();
-                elderExists = true;
             }
         }
     }
@@ -378,6 +384,8 @@ public class GameWorld
     {
         Vector2 spawn = getRandomSpawnPositionOutsideCamera();
         enemies.add(new Elder(spawn.x, spawn.y));
+        elderExists = true;
+        SoundManager.getInstance().playSFX(SoundEffectType.SPELL_EXPLOSION_MAGIC_02);
     }
 
     private void spawnTrees(int count)
@@ -469,5 +477,22 @@ public class GameWorld
                 it.remove();
             }
         }
+    }
+
+    public void cheatAdvanceTime()
+    {
+        totalGameTime += 60;
+    }
+
+    public void killAllEnemies()
+    {
+        for (Iterator<Enemy> it = enemies.iterator(); it.hasNext(); ) {
+            Enemy a = it.next();
+            if (!(a instanceof Tree))
+            {
+                it.remove();
+            }
+        }
+        SoundManager.getInstance().playSFX(SoundEffectType.EXPLOSION_BLOOD_01);
     }
 }

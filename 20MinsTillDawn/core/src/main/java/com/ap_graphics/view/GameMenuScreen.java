@@ -13,12 +13,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -162,6 +158,23 @@ public class GameMenuScreen implements Screen {
 
             boolean isMouseDown = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
             cursorManager.update(isMouseDown);
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.T))
+            {
+                gameWorld.cheatAdvanceTime();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.L))
+            {
+                player.levelUp();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.H))
+            {
+                player.heartsUp();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.B))
+            {
+                gameWorld.spawnElder();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.K))
+            {
+                gameWorld.killAllEnemies();
+            }
         }
 
         batch.end();

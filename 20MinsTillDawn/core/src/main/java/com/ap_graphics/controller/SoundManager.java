@@ -21,6 +21,9 @@ public class SoundManager
     private MusicPlaylist currentPlaylist;
     private int currentTrackIndex = 0;
 
+    private long loopingSoundId = -1;
+    private Sound loopingSound = null;
+
     private SoundManager()
     {
         loadSoundEffects();
@@ -189,5 +192,26 @@ public class SoundManager
         if (currentPlaylist == null) return;
         currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.getSize()) % currentPlaylist.getSize();
         playCurrentTrack();
+    }
+
+    public void playLoopingSFX()
+    {
+        stopMusic();
+        stopLoopingSFX(); // stop if already playing
+
+        loopingSound = soundEffects.get(SoundEffectType.PRETTY_DUNGEON_LOOP);
+        if (loopingSound != null)
+        {
+            loopingSoundId = loopingSound.loop();
+        }
+    }
+
+    public void stopLoopingSFX()
+    {
+        if (loopingSound != null && loopingSoundId != -1)
+        {
+            loopingSound.stop(loopingSoundId);
+            loopingSoundId = -1;
+        }
     }
 }

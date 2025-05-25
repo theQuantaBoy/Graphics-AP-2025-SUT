@@ -1,5 +1,6 @@
 package com.ap_graphics.model;
 
+import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.combat.Weapon;
 import com.ap_graphics.model.enums.*;
 import com.badlogic.gdx.Gdx;
@@ -51,7 +52,6 @@ public class Player
     private int currentGameDuration = 20;
 
     private AbilityType abilityType = null;
-    private boolean shouldShowAbilityScreen = false;
 
     private boolean isDead = false;
 
@@ -213,9 +213,21 @@ public class Player
         if (this.xp >= ((level + 1) * 20))
         {
             this.xp = this.xp - ((level + 1) * 20);
-            level += 1;
-            shouldShowAbilityScreen = true;
+            levelUp();
         }
+    }
+
+    public void levelUp()
+    {
+        level += 1;
+        GameWorld gameWorld = GameWorld.getInstance();
+        gameWorld.getAttachedAnimations().add(new AttachedAnimation(GameAnimationType.LEVEL_UP, true, 1.0f));
+        SoundManager.getInstance().playSFX(SoundEffectType.BUFF_POWER_UP_01);
+    }
+
+    public void heartsUp()
+    {
+        hp = avatar.getHp() * 10;
     }
 
     public Vector2 getPosition()
@@ -375,16 +387,6 @@ public class Player
     public void setAbility(AbilityType abilityType)
     {
         this.abilityType = abilityType;
-        shouldShowAbilityScreen = false;
-    }
-
-    public void showLevelUpScreen()
-    {
-        if (shouldShowAbilityScreen)
-        {
-            GameWorld gameWorld = GameWorld.getInstance();
-            gameWorld.getAttachedAnimations().add(new AttachedAnimation(GameAnimationType.LEVEL_UP, true, 1.0f));
-        }
     }
 
     public boolean isDead()
@@ -409,6 +411,6 @@ public class Player
 
     public int getMaxHP()
     {
-        return avatar.getHp() * 10;
+        return avatar.getHp();
     }
 }

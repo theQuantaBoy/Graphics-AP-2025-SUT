@@ -74,6 +74,8 @@ public class SettingsMenuScreen implements Screen
             player.setMusicVolume(value);
             volumePercent.setText((int)(value * 100) + " %");
             SoundManager.getInstance().updatePlayerSettings();
+            SoundManager.getInstance().stopLoopingSFX();
+            SoundManager.getInstance().playMusic(player);
             return false;
         });
         content.add(volumeLabel).left();

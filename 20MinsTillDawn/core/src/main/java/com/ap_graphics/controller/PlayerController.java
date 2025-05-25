@@ -5,6 +5,7 @@ import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.combat.Weapon;
 import com.ap_graphics.model.enums.Avatar;
+import com.ap_graphics.model.enums.SoundEffectType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -25,6 +26,9 @@ public class PlayerController
     private final float beWidth;
     private final float beHeight;
 
+    private float footstepTimer = 0f;
+    private final float footstepCooldown = 0.35f; // seconds between steps
+
     public PlayerController(Player player, Texture background)
     {
         this.player = player;
@@ -40,31 +44,45 @@ public class PlayerController
 
     public void update(float delta, SpriteBatch batch)
     {
-        handlePlayerInput();
+        handlePlayerInput(delta);
         updateAnimation(delta);
 
         player.getPlayerSprite().setPosition(player.getPosX(), player.getPosY());
         player.getPlayerSprite().draw(batch);
     }
 
-    public void handlePlayerInput()
-    {
+    public void handlePlayerInput(float delta) {
         float speed = player.getSpeed();
+        boolean moved = false;
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            player.updateLocation(0, +speed); // Move up
+            player.updateLocation(0, +speed);
+            moved = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            player.updateLocation(0, -speed); // Move down
+            player.updateLocation(0, -speed);
+            moved = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D))
-        {
-            player.updateLocation(+speed, 0); // Move right
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            player.updateLocation(+speed, 0);
             player.setHeadedRight(true);
+            moved = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            player.updateLocation(-speed, 0); // Move left
-            player.setHeadedRight(false);  // ✅ Facing left
+            player.updateLocation(-speed, 0);
+            player.setHeadedRight(false);
+            moved = true;
+        }
+
+        // 🦶 Play walking sound if moving and cooldown passed
+        if (moved) {
+            footstepTimer -= delta;
+            if (footstepTimer <= 0f) {
+                SoundManager.getInstance().playSFX(SoundEffectType.FOOTSTEPS_CASUAL_GRASS_01);
+                footstepTimer = footstepCooldown;
+            }
+        } else {
+            footstepTimer = 0f; // reset if not moving
         }
     }
 

@@ -24,6 +24,8 @@ public class LoginMenuController
         App.setCurrentPlayer(player);
         SoundManager.getInstance().playMusic(player);
         SoundManager.getInstance().updatePlayerSettings();
+        SoundManager.getInstance().stopLoopingSFX();
+        SoundManager.getInstance().playMusic(player);
         return new Result(true, "logged in successfully");
     }
 
