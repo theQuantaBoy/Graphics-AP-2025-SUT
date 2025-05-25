@@ -48,6 +48,8 @@ public class Player
     private boolean autoAimEnabled = true;
     private boolean blackAndWhiteMode = false;
 
+    private int currentGameDuration = 20;
+
     public Player(String username, String password, SecurityQuestionOptions answer)
     {
         this.username = username;
@@ -316,5 +318,15 @@ public class Player
     public void setBlackAndWhiteMode(boolean blackAndWhiteMode)
     {
         this.blackAndWhiteMode = blackAndWhiteMode;
+    }
+
+    public int getCurrentGameDuration()
+    {
+        return currentGameDuration;
+    }
+
+    public void setCurrentGameDuration(int currentGameDuration)
+    {
+        this.currentGameDuration = currentGameDuration;
     }
 }

@@ -149,4 +149,22 @@ public enum Avatar {
         animation.setPlayMode(Animation.PlayMode.LOOP);
         return animation;
     }
+
+    public Texture getFirstTexture()
+    {
+        return new Texture(idlePaths.get(0));
+    }
+
+    public static int getIndex(Avatar avatar)
+    {
+        for (int i = 0; i < Avatar.values().length; i++)
+        {
+            Avatar a = Avatar.values()[i];
+            if (a == avatar)
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
 }

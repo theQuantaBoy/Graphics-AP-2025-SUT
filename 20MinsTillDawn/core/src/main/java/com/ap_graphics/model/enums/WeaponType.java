@@ -66,4 +66,22 @@ public enum WeaponType
         TextureRegion textureRegion = new TextureRegion(new Texture(stillTexture));
         return textureRegion;
     }
+
+    public Texture getTexture()
+    {
+        return new Texture(stillTexture);
+    }
+
+    public static int getIndex(WeaponType type)
+    {
+        for (int i = 0; i < WeaponType.values().length; i++)
+        {
+            WeaponType w = WeaponType.values()[i];
+            if (w == type)
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
 }
