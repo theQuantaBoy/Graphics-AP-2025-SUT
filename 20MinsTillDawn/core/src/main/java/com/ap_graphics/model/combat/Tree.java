@@ -17,7 +17,17 @@ public class Tree extends Enemy
         stateTime += delta;
         TextureRegion frame = currentAnimation.getKeyFrame(stateTime, true);
 
-        batch.draw(frame, position.x, position.y,
-            frame.getRegionWidth() / 2f, frame.getRegionHeight() / 2f);
+        batch.draw(
+            frame,
+            position.x,
+            position.y,
+            frame.getRegionWidth() / 2f,   // originX
+            frame.getRegionHeight() / 2f,  // originY
+            frame.getRegionWidth(),
+            frame.getRegionHeight(),
+            2f, // scaleX
+            2f, // scaleY
+            0f  // rotation
+        );
     }
 }

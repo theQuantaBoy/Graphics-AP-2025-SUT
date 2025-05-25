@@ -2,7 +2,10 @@ package com.ap_graphics.model.combat;
 
 import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.App;
+import com.ap_graphics.model.AttachedAnimation;
+import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.Player;
+import com.ap_graphics.model.enums.GameAnimationType;
 import com.ap_graphics.model.enums.SoundEffectType;
 import com.ap_graphics.model.enums.WeaponType;
 import com.badlogic.gdx.math.Vector2;
@@ -23,6 +26,8 @@ public class Weapon
     private final Vector2 offset; // Distance from player center
 
     private float reloadTimer = 0f;
+
+    private AttachedAnimation reloadAnimation = null;
 
     public Weapon(WeaponType type)
     {
@@ -48,6 +53,10 @@ public class Weapon
                 currentAmmo = type.getMaxAmmo();
                 isReloading = false;
                 SoundManager.getInstance().playSFX(SoundEffectType.WEAPON_SHOTGUN_RELOAD);
+
+                GameWorld gameWorld = App.getGame();
+                gameWorld.getAttachedAnimations().remove(reloadAnimation);
+                reloadAnimation = null;
             }
         }
 
@@ -58,15 +67,26 @@ public class Weapon
             {
                 isReloading = true;
                 reloadTimer = reloadTime;
+
+                GameWorld gameWorld = App.getGame();
+                AttachedAnimation animation = new AttachedAnimation(GameAnimationType.RELOAD, false, 1.5f);
+                reloadAnimation = animation;
+                gameWorld.getAttachedAnimations().add(animation);
             }
         }
     }
 
     public void startReloading()
     {
-        if (!isReloading) {
+        if (!isReloading)
+        {
             isReloading = true;
             reloadTimer = reloadTime;
+
+            GameWorld gameWorld = App.getGame();
+            AttachedAnimation animation = new AttachedAnimation(GameAnimationType.RELOAD, false, 1.5f);
+            reloadAnimation = animation;
+            gameWorld.getAttachedAnimations().add(animation);
         }
     }
 

@@ -57,6 +57,10 @@ public class GameWorld
     private Stage uiStage;
     private Skin uiSkin;
 
+    private ArrayList<AttachedAnimation> attachedAnimations = new ArrayList<>();
+
+    private boolean levelUpAnimationOver = false;
+
     public GameWorld(Player player, float w, float h, float gameTime)
     {
         instance = this;
@@ -86,7 +90,7 @@ public class GameWorld
         eyebatSpawnTimer += delta;
         elderSpawnTimer += delta;
 
-        if (player.shouldShowAbilityScreen())
+        if (levelUpAnimationOver)
         {
             pause();
             AbilityType[] abilities = AbilityType.randomThree();
@@ -94,6 +98,7 @@ public class GameWorld
             ChooseAbilityDialog dialog = new ChooseAbilityDialog(uiStage, uiSkin, abilities);
 
             uiStage.addActor(dialog);
+            levelUpAnimationOver = false;
         }
 
         spawnEnemies(delta);
@@ -111,6 +116,7 @@ public class GameWorld
         player.updateInvincibility(delta);
         player.getCurrentWeapon().update(delta);
         updateAnimations(delta);
+        updateAttachedAnimations(delta);
     }
 
     public void render(SpriteBatch batch, float delta)
@@ -195,6 +201,7 @@ public class GameWorld
                     if (enemy.getBounds().overlaps(bulletBounds))
                     {
                         enemy.takeDamage(bullet.getDamage());
+                        enemy.moveAwayFromPlayer(delta, player);
                         addFloatingText("-" + bullet.getDamage(), enemy.getPosition(), Color.YELLOW);
                         if (enemy.isDead())
                         {
@@ -234,6 +241,7 @@ public class GameWorld
                 if (player.takeDamage(bullet.getDamage()))
                 {
                     addFloatingText("-" + bullet.getDamage(), player.getPosition(), Color.RED);
+                    attachedAnimations.add(new AttachedAnimation(GameAnimationType.HERO_DAMAGE, true, 1.2f));
                 }
 
                 bulletIter.remove();
@@ -286,6 +294,7 @@ public class GameWorld
         xpFont.setColor(1, 1, 0, 1); // Reset color before drawing
         floatingTexts.forEach(text -> text.render(batch, xpFont));
         drawAnimations(batch);
+        drawAttachedAnimations(batch);
         drawWeapon(batch);
     }
 
@@ -407,11 +416,11 @@ public class GameWorld
     public void drawWeapon(SpriteBatch batch)
     {
         Weapon weapon = player.getCurrentWeapon();
-//        if (!weapon.isReloading())
-//        {
+
+        if (!weapon.isReloading())
+        {
             TextureRegion weaponTex = player.getCurrentWeapon().getType().getTextureRegion();
             Vector2 weaponPos = player.getCurrentWeapon().getPosition();
-
             batch.draw(
                 weaponTex,
                 weaponPos.x,
@@ -424,10 +433,7 @@ public class GameWorld
                 1f,
                 player.getCurrentWeapon().getRotation()
             );
-//        } else
-//        {
-//
-//        }
+        }
     }
 
     public void pause() { paused = true; }
@@ -435,4 +441,33 @@ public class GameWorld
     public void resume() { paused = false; }
 
     public boolean isPaused() { return paused; }
+
+    public ArrayList<AttachedAnimation> getAttachedAnimations()
+    {
+        return attachedAnimations;
+    }
+
+    public void drawAttachedAnimations(SpriteBatch batch)
+    {
+        for (AttachedAnimation a : attachedAnimations)
+        {
+            a.render(batch);
+        }
+    }
+
+    public void updateAttachedAnimations(float delta)
+    {
+        for (Iterator<AttachedAnimation> it = attachedAnimations.iterator(); it.hasNext(); ) {
+            AttachedAnimation a = it.next();
+            a.update(delta);
+            if (a.isFinished())
+            {
+                if (a.getAnimationType() == GameAnimationType.LEVEL_UP)
+                {
+                    levelUpAnimationOver = true;
+                }
+                it.remove();
+            }
+        }
+    }
 }

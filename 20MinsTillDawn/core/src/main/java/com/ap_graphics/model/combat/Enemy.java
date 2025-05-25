@@ -54,6 +54,28 @@ public abstract class Enemy extends AbstractAnimatedEntity
         }
     }
 
+    public void moveAwayFromPlayer(float delta, Player player)
+    {
+        if (player == null) return;
+
+        float dx = position.x - player.getPosX();
+        float dy = position.y - player.getPosY();
+
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 1e-3)
+        {
+            float normX = dx / distance;
+            float normY = dy / distance;
+
+            // Optional: You can tweak the multiplier to increase knockback strength
+            float knockbackSpeed = speed * 70f;
+
+            position.x += normX * knockbackSpeed * delta;
+            position.y += normY * knockbackSpeed * delta;
+        }
+    }
+
     public void takeDamage(int dmg)
     {
         hp -= dmg;

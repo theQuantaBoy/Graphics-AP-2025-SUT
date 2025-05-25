@@ -13,9 +13,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -56,6 +59,7 @@ public class GameMenuScreen implements Screen {
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.zoom = 0.5f; // 0.5 means 2.0x zoom (zoom in)
 
         timerLabel = new Label("", skin);
         ammoLabel = new Label("", skin);
@@ -167,10 +171,14 @@ public class GameMenuScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-        camera.setToOrtho(false, width, height);
+    public void resize(int width, int height)
+    {
         stage.getViewport().update(width, height, true);
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+        camera.update();
     }
+
 
     @Override
     public void pause() {}
@@ -182,7 +190,8 @@ public class GameMenuScreen implements Screen {
     public void hide() {}
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         stage.dispose();
         cursorManager.dispose();
         batch.dispose();

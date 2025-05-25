@@ -378,9 +378,13 @@ public class Player
         shouldShowAbilityScreen = false;
     }
 
-    public boolean shouldShowAbilityScreen()
+    public void showLevelUpScreen()
     {
-        return shouldShowAbilityScreen;
+        if (shouldShowAbilityScreen)
+        {
+            GameWorld gameWorld = GameWorld.getInstance();
+            gameWorld.getAttachedAnimations().add(new AttachedAnimation(GameAnimationType.LEVEL_UP, true, 1.0f));
+        }
     }
 
     public boolean isDead()

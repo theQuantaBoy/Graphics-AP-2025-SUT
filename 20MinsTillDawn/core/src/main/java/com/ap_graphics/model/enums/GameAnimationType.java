@@ -57,6 +57,14 @@ public enum GameAnimationType
         "images/effects/large_chest/T_LargeChestAnimation_2.png",
         "images/effects/large_chest/T_LargeChestAnimation_3.png",
     }, 0.25f),
+
+    HERO_DAMAGE(new String[]{
+        "images/effects/gun_evo_animation/T_GunEvo_Animation_0.png",
+        "images/effects/gun_evo_animation/T_GunEvo_Animation_1.png",
+        "images/effects/gun_evo_animation/T_GunEvo_Animation_2.png",
+        "images/effects/gun_evo_animation/T_GunEvo_Animation_3.png",
+        "images/effects/gun_evo_animation/T_GunEvo_Animation_4.png",
+    }, 0.05f)
     ;
 
     private final String[] framePaths;
