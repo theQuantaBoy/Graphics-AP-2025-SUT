@@ -45,6 +45,9 @@ public class Player
     private float sfxVolume = 1.0f;    // Range: 0.0 to 1.0
     private int selectedPlaylist = 0; // 0 = TAYLOR_SWIFT, 1 = UNDERTALE
 
+    private boolean autoAimEnabled = true;
+    private boolean blackAndWhiteMode = false;
+
     public Player(String username, String password, SecurityQuestionOptions answer)
     {
         this.username = username;
@@ -293,5 +296,25 @@ public class Player
     public MusicPlaylist getMusicPlaylist()
     {
         return selectedPlaylist == 1 ? MusicPlaylist.UNDERTALE : MusicPlaylist.TAYLOR_SWIFT;
+    }
+
+    public boolean isAutoAimEnabled()
+    {
+        return autoAimEnabled;
+    }
+
+    public void setAutoAimEnabled(boolean autoAimEnabled)
+    {
+        this.autoAimEnabled = autoAimEnabled;
+    }
+
+    public boolean isBlackAndWhiteMode()
+    {
+        return blackAndWhiteMode;
+    }
+
+    public void setBlackAndWhiteMode(boolean blackAndWhiteMode)
+    {
+        this.blackAndWhiteMode = blackAndWhiteMode;
     }
 }

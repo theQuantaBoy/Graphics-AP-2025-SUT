@@ -73,8 +73,10 @@ public class SoundManager
 
     private void playCurrentTrack()
     {
+        stopMusic(); // 🛑 Prevent overlapping music
+
         if (currentPlaylist == null) {
-            currentPlaylist = MusicPlaylist.UNDERTALE; // fallback
+            currentPlaylist = MusicPlaylist.UNDERTALE;
             currentTrackIndex = 0;
         }
 
@@ -98,12 +100,13 @@ public class SoundManager
 
         currentMusic.setOnCompletionListener(music -> {
             currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
-            playCurrentTrack(); // play next song
+            playCurrentTrack(); // 🔄 Loop to next song
         });
 
-        Gdx.app.log("SoundManager", "Playing music: " + trackPath + " at volume " + volume);
+        Gdx.app.log("SoundManager", "Playing music: " + trackPath);
         currentMusic.play();
     }
+
 
     public void stopMusic()
     {
@@ -158,5 +161,33 @@ public class SoundManager
             sound.dispose();
         }
         stopMusic();
+    }
+
+    public String getCurrentTrackName()
+    {
+        if (currentPlaylist == null) return "No Track";
+        return currentPlaylist.getTrackName(currentTrackIndex);
+    }
+
+    public void playTrack(MusicPlaylist playlist, int index)
+    {
+        stopMusic();
+        this.currentPlaylist = playlist;
+        this.currentTrackIndex = index % playlist.getSize();
+        playCurrentTrack();
+    }
+
+    public void playNextTrack()
+    {
+        if (currentPlaylist == null) return;
+        currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.getSize();
+        playCurrentTrack();
+    }
+
+    public void playPreviousTrack()
+    {
+        if (currentPlaylist == null) return;
+        currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.getSize()) % currentPlaylist.getSize();
+        playCurrentTrack();
     }
 }

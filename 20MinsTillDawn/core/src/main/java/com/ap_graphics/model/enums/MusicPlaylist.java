@@ -52,4 +52,11 @@ public enum MusicPlaylist
     {
         return tracks.length;
     }
+
+    public String getTrackName(int index)
+    {
+        String path = tracks[index];
+        String fileName = path.substring(path.lastIndexOf("/") + 1);
+        return fileName.replace(".mp3", "");
+    }
 }
