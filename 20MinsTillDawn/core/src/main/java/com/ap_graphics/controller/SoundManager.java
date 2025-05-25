@@ -54,7 +54,7 @@ public class SoundManager
         Sound sound = soundEffects.get(type);
         if (sound != null)
         {
-            sound.play(player.getSfxVolume());
+            sound.play();
         }
     }
 

@@ -50,7 +50,7 @@ public class Weapon
             reloadTimer -= delta;
             if (reloadTimer <= 0)
             {
-                currentAmmo = type.getMaxAmmo();
+                currentAmmo = maxAmmo;
                 isReloading = false;
 
                 GameWorld gameWorld = App.getGame();
@@ -132,5 +132,30 @@ public class Weapon
     public int getCurrentAmmo()
     {
         return currentAmmo;
+    }
+
+    public void addProjectile()
+    {
+        this.projectiles += 1;
+    }
+
+    public void addMaxAmmo()
+    {
+        this.maxAmmo += 5;
+    }
+
+    public int getDamage()
+    {
+        Player player = App.getCurrentPlayer();
+        if (player != null && player.isDamageBuffActive())
+        {
+            return (int) (damage * 1.25f);
+        }
+        return damage;
+    }
+
+    public int getMaxAmmo()
+    {
+        return maxAmmo;
     }
 }

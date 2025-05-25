@@ -7,6 +7,8 @@ import com.ap_graphics.model.enums.EnemyType;
 import com.ap_graphics.model.enums.GameAnimationType;
 import com.ap_graphics.model.enums.SoundEffectType;
 import com.ap_graphics.view.ChooseAbilityDialog;
+import com.ap_graphics.view.EndGameDialog;
+import com.ap_graphics.view.PauseMenuDialog;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -62,6 +64,7 @@ public class GameWorld
     private ArrayList<AttachedAnimation> attachedAnimations = new ArrayList<>();
 
     private boolean levelUpAnimationOver = false;
+    private boolean pauseIsSelected = false;
 
     public GameWorld(Player player, float w, float h, float gameTime)
     {
@@ -92,6 +95,28 @@ public class GameWorld
         eyebatSpawnTimer += delta;
         elderSpawnTimer += delta;
 
+        if (shouldPause())
+        {
+            if (pauseIsSelected)
+            {
+                pause();
+                PauseMenuDialog dialog = new PauseMenuDialog(uiStage, uiSkin, xpFont);
+
+                uiStage.addActor(dialog);
+                pauseIsSelected = false;
+            } else if (player.getHp() == 0)
+            {
+                pause();
+                EndGameDialog dialog = new EndGameDialog(uiStage, uiSkin, xpFont, false);
+                uiStage.addActor(dialog);
+            } else
+            {
+                pause();
+                EndGameDialog dialog = new EndGameDialog(uiStage, uiSkin, xpFont, true);
+                uiStage.addActor(dialog);
+            }
+        }
+
         if (levelUpAnimationOver)
         {
             pause();
@@ -107,6 +132,7 @@ public class GameWorld
         checkCollisions(delta);
         checkEnemyBulletCollisions(delta);
         checkEnemyCollisions(delta);
+        player.update(delta);
 
         for (Enemy enemy : enemies)
         {
@@ -167,7 +193,7 @@ public class GameWorld
         }
     }
 
-    private void spawnEyebat()
+    public void spawnEyebat()
     {
         Vector2 spawn = getRandomSpawnPositionOutsideCamera();
         enemies.add(new Eyebat(spawn.x, spawn.y));
@@ -202,10 +228,10 @@ public class GameWorld
                 {
                     if (enemy.getBounds().overlaps(bulletBounds))
                     {
-                        enemy.takeDamage(bullet.getDamage());
+                        enemy.takeDamage(player.getCurrentWeapon().getDamage());
                         SoundManager.getInstance().playSFX(SoundEffectType.BLOOD_SPLASH_QUICK_01);
                         enemy.moveAwayFromPlayer(delta, player);
-                        addFloatingText("-" + bullet.getDamage(), enemy.getPosition(), Color.YELLOW);
+                        addFloatingText("-" + player.getCurrentWeapon().getDamage(), enemy.getPosition(), Color.YELLOW);
                         if (enemy.isDead())
                         {
                             if (enemy instanceof Elder)
@@ -216,6 +242,7 @@ public class GameWorld
                             xpOrbs.add(new XpOrb(enemy.getPosition().x, enemy.getPosition().y));
                             animations.add(new GameAnimation(GameAnimationType.TENTACLE_DEATH, enemy.getPosition()));
                             enemyCollisionIter.remove();
+                            player.addToKills();
                         }
                         bulletIter.remove();
                         break;
@@ -242,10 +269,10 @@ public class GameWorld
             Rectangle bulletBounds = bullet.getBounds();
             if (player.getBounds().overlaps(bulletBounds))
             {
-                if (player.takeDamage(bullet.getDamage()))
+                if (player.takeDamage(player.getCurrentWeapon().getDamage()))
                 {
                     SoundManager.getInstance().playSFX(SoundEffectType.DEBUFF_SPEED);
-                    addFloatingText("-" + bullet.getDamage(), player.getPosition(), Color.RED);
+                    addFloatingText("-" + player.getCurrentWeapon().getDamage(), player.getPosition(), Color.RED);
                     attachedAnimations.add(new AttachedAnimation(GameAnimationType.HERO_DAMAGE, true, 1.2f));
                 }
 
@@ -352,6 +379,7 @@ public class GameWorld
             if (orb.getBounds().overlaps(player.getBounds()))
             {
                 player.gainXP(3);
+                SoundManager.getInstance().playSFX(SoundEffectType.COINS_10);
                 addFloatingText("+3", new Vector2(player.getPosX(), player.getPosY()), Color.GREEN);
                 orbIter.remove();
             }
@@ -494,5 +522,22 @@ public class GameWorld
             }
         }
         SoundManager.getInstance().playSFX(SoundEffectType.EXPLOSION_BLOOD_01);
+    }
+
+    private boolean shouldPause()
+    {
+        return pauseIsSelected || (totalGameTime >= gameTime) || (player.getHp() == 0);
+    }
+
+    public void hitPause()
+    {
+        pauseIsSelected = true;
+    }
+
+    public int getScore()
+    {
+        int score = (int) totalGameTime * player.getKillCount();
+        player.addScore(score);
+        return score;
     }
 }

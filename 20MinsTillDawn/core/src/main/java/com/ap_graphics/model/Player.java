@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Player
@@ -33,6 +34,7 @@ public class Player
     private int xp = 0;
     private int level = 1;
     private int score = 0;
+    private int maxHp = 50;
 
     private float sinceInvincibility = 0;
     private boolean isInvincible = false;
@@ -55,6 +57,16 @@ public class Player
 
     private boolean isDead = false;
 
+    private float speedBuffTimer = 0f;
+    private float damageBuffTimer = 0f;
+
+    private boolean isSpeedBuffActive = false;
+    private boolean isDamageBuffActive = false;
+
+    private ArrayList<AbilityType> abilityTypes = new ArrayList<>();
+
+    private int killCount = 0;
+
     public Player(String username, String password, SecurityQuestionOptions answer)
     {
         this.username = username;
@@ -68,7 +80,29 @@ public class Player
         setCurrentWeapon(new Weapon(WeaponType.REVOLVER));
 
         this.hp = avatar.getHp() * 10;
+        this.maxHp = avatar.getHp() * 10;
         this.speedMultiplier = avatar.getSpeedMultiplier();
+    }
+
+    public void update(float delta)
+    {
+        if (isSpeedBuffActive)
+        {
+            speedBuffTimer -= delta;
+            if (speedBuffTimer <= 0f)
+            {
+                isSpeedBuffActive = false;
+            }
+        }
+
+        if (isDamageBuffActive)
+        {
+            damageBuffTimer -= delta;
+            if (damageBuffTimer <= 0f)
+            {
+                isDamageBuffActive = false;
+            }
+        }
     }
 
     public void updateInvincibility(float delta)
@@ -160,7 +194,7 @@ public class Player
 
     public float getSpeed()
     {
-        return speed;
+        return isSpeedBuffActive ? speed * 2f : speed;
     }
 
     public float getPosX() {
@@ -227,7 +261,8 @@ public class Player
 
     public void heartsUp()
     {
-        hp = avatar.getHp() * 10;
+        hp = maxHp;
+        SoundManager.getInstance().playSFX(SoundEffectType.SFX_LOWHEALTH_ALARMLOOP1);
     }
 
     public Vector2 getPosition()
@@ -271,7 +306,7 @@ public class Player
 
     public int getHp()
     {
-        return hp / 10;
+        return (hp + 9) / 10;
     }
 
     public int getScore()
@@ -387,6 +422,45 @@ public class Player
     public void setAbility(AbilityType abilityType)
     {
         this.abilityType = abilityType;
+        if (!abilityTypes.contains(abilityType))
+        {
+            abilityTypes.add(abilityType);
+        }
+
+        switch (abilityType)
+        {
+            case VITALITY:
+            {
+                maxHp += 10;
+                break;
+            }
+
+            case PROCREASE:
+            {
+                currentWeapon.addProjectile();
+                break;
+            }
+
+            case AMOCREASE:
+            {
+                currentWeapon.addMaxAmmo();
+                break;
+            }
+
+            case DAMAGER:
+            {
+                isDamageBuffActive = true;
+                damageBuffTimer = 10f;
+                break;
+            }
+
+            case SPEEDY:
+            {
+                isSpeedBuffActive = true;
+                speedBuffTimer = 10f;
+                break;
+            }
+        }
     }
 
     public boolean isDead()
@@ -411,6 +485,31 @@ public class Player
 
     public int getMaxHP()
     {
-        return avatar.getHp();
+        return maxHp / 10;
+    }
+
+    public boolean isDamageBuffActive()
+    {
+        return isDamageBuffActive;
+    }
+
+    public ArrayList<AbilityType> getAbilityTypes()
+    {
+        return abilityTypes;
+    }
+
+    public int getKillCount()
+    {
+        return killCount;
+    }
+
+    public void addToKills()
+    {
+        killCount += 1;
+    }
+
+    public void addScore(int score)
+    {
+        this.score += score;
     }
 }

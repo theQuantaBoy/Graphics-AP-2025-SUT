@@ -1,5 +1,6 @@
 package com.ap_graphics.view;
 
+import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.CursorManager;
 import com.ap_graphics.controller.PlayerController;
 import com.ap_graphics.model.*;
@@ -11,10 +12,13 @@ import com.ap_graphics.model.enums.Avatar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -23,7 +27,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class GameMenuScreen implements Screen {
+public class GameMenuScreen implements Screen
+{
     private final Stage stage;
     private final Skin skin;
     private final SpriteBatch batch;
@@ -34,11 +39,14 @@ public class GameMenuScreen implements Screen {
     private Texture background;
 
     private final Player player;
-    private Label timerLabel, ammoLabel, xpLabel, levelLabel, hpLabel;
+    private Label timerLabel, ammoLabel, killLabel, xpLabel, levelLabel, hpLabel;
 
     private CursorManager cursorManager;
 
-    public GameMenuScreen(Skin skin) {
+    BitmapFont font;
+
+    public GameMenuScreen(Skin skin)
+    {
         this.skin = skin;
         this.stage = new Stage(new ScreenViewport());
         this.batch = new SpriteBatch();
@@ -57,17 +65,29 @@ public class GameMenuScreen implements Screen {
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.zoom = 0.5f; // 0.5 means 2.0x zoom (zoom in)
 
-        timerLabel = new Label("", skin);
-        ammoLabel = new Label("", skin);
-        xpLabel = new Label("", skin);
-        levelLabel = new Label("", skin);
-        hpLabel = new Label("", skin);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/ChevyRay.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 20; // Set the desired size
+        parameter.color = Color.WHITE;
+        BitmapFont customFont = generator.generateFont(parameter);
+        generator.dispose(); // Dispose when done
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = customFont;
+
+        timerLabel = new Label("", labelStyle);
+        ammoLabel = new Label("", labelStyle);
+        killLabel = new Label("", labelStyle);
+        xpLabel = new Label("", labelStyle);
+        levelLabel = new Label("", labelStyle);
+        hpLabel = new Label("", labelStyle);
 
         Table uiTable = new Table();
         uiTable.top().left();
         uiTable.setFillParent(true);
         uiTable.add(timerLabel).pad(10).left().row();
         uiTable.add(ammoLabel).pad(10).left().row();
+        uiTable.add(killLabel).pad(10).left().row();
         uiTable.add(xpLabel).pad(10).left().row();
         uiTable.add(levelLabel).pad(10).left().row();
         uiTable.add(hpLabel).pad(10).left().row();
@@ -116,10 +136,11 @@ public class GameMenuScreen implements Screen {
 
         if (player.getCurrentWeapon() != null) {
             int currentAmmo = player.getCurrentWeapon().getCurrentAmmo();
-            int maxAmmo = player.getCurrentWeapon().getType().getMaxAmmo();
+            int maxAmmo = player.getCurrentWeapon().getMaxAmmo();
             ammoLabel.setText("Ammo: " + currentAmmo + " / " + maxAmmo);
         }
 
+        killLabel.setText("Kill Count: " + player.getKillCount());
         xpLabel.setText("XP: " + player.getXp());
         levelLabel.setText("Level: " + player.getLevel());
         hpLabel.setText("HP: " + player.getCurrentHP() + " / " + player.getMaxHP());
@@ -174,6 +195,16 @@ public class GameMenuScreen implements Screen {
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.K))
             {
                 gameWorld.killAllEnemies();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.P))
+            {
+                gameWorld.hitPause();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.F))
+            {
+                App.setGame(null);
+                TillDawn.getGame().setScreen(new MainMenuScreen());
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.N))
+            {
+                gameWorld.spawnEyebat();
             }
         }
 
