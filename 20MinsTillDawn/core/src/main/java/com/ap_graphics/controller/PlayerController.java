@@ -1,6 +1,6 @@
 package com.ap_graphics.controller;
 
-import com.ap_graphics.model.Bullet;
+import com.ap_graphics.model.combat.Bullet;
 import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.combat.Weapon;

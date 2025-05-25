@@ -22,6 +22,8 @@ public class LoginMenuController
         }
 
         App.setCurrentPlayer(player);
+        SoundManager.getInstance().playMusic(player);
+        SoundManager.getInstance().updatePlayerSettings();
         return new Result(true, "logged in successfully");
     }
 

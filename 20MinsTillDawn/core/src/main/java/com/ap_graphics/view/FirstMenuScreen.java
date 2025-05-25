@@ -1,6 +1,8 @@
 package com.ap_graphics.view;
 
 import com.ap_graphics.TillDawn;
+import com.ap_graphics.controller.SoundManager;
+import com.ap_graphics.model.App;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -159,7 +161,10 @@ public class FirstMenuScreen implements Screen
     }
 
     @Override
-    public void show() {}
+    public void show()
+    {
+        SoundManager.getInstance().playMusic(App.getCurrentPlayer());
+    }
 
     @Override
     public void pause() {}

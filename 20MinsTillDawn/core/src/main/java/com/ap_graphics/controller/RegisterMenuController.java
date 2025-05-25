@@ -48,6 +48,8 @@ public class RegisterMenuController
         Player player = new Player(username, password, options);
         App.getPlayers().add(player);
         App.setCurrentPlayer(player);
+        SoundManager.getInstance().playMusic(player);
+        SoundManager.getInstance().updatePlayerSettings();
         return new Result(true, "success");
     }
 

@@ -1,5 +1,6 @@
 package com.ap_graphics;
 
+import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.GameAssetManager;
 import com.ap_graphics.view.FirstMenuScreen;
 import com.badlogic.gdx.Gdx;
@@ -21,6 +22,7 @@ public class TillDawn extends com.badlogic.gdx.Game
         applyCustomCursor(0, 0);
         GameAssetManager.getGameAssetManager().loadAllAssets();
         loadFonts();
+        SoundManager.getInstance(); // initialize sounds
 
         game = this;
         batch = new SpriteBatch();
@@ -31,6 +33,7 @@ public class TillDawn extends com.badlogic.gdx.Game
     public void dispose()
     {
         super.dispose();
+        SoundManager.getInstance().dispose();SoundManager.getInstance().dispose();
     }
 
     @Override

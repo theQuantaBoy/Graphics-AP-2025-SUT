@@ -2,6 +2,7 @@ package com.ap_graphics.model;
 
 import com.ap_graphics.model.combat.Weapon;
 import com.ap_graphics.model.enums.Avatar;
+import com.ap_graphics.model.enums.MusicPlaylist;
 import com.ap_graphics.model.enums.SecurityQuestionOptions;
 import com.ap_graphics.model.enums.WeaponType;
 import com.badlogic.gdx.Gdx;
@@ -36,6 +37,13 @@ public class Player
     private float sinceInvincibility = 0;
     private boolean isInvincible = false;
     private static final float INVINCIBILITY_DURATION = 1f;
+
+    // Sound settings
+    private boolean musicEnabled = true;
+    private boolean sfxEnabled = true;
+    private float musicVolume = 1.0f;  // Range: 0.0 to 1.0
+    private float sfxVolume = 1.0f;    // Range: 0.0 to 1.0
+    private int selectedPlaylist = 0; // 0 = TAYLOR_SWIFT, 1 = UNDERTALE
 
     public Player(String username, String password, SecurityQuestionOptions answer)
     {
@@ -230,5 +238,60 @@ public class Player
     public Texture getImage()
     {
         return  new Texture(Gdx.files.internal(avatar.getPortraitPath()));
+    }
+
+    public boolean isMusicEnabled()
+    {
+        return musicEnabled;
+    }
+
+    public void setMusicEnabled(boolean musicEnabled)
+    {
+        this.musicEnabled = musicEnabled;
+    }
+
+    public boolean isSfxEnabled()
+    {
+        return sfxEnabled;
+    }
+
+    public void setSfxEnabled(boolean sfxEnabled)
+    {
+        this.sfxEnabled = sfxEnabled;
+    }
+
+    public float getMusicVolume()
+    {
+        return musicVolume;
+    }
+
+    public void setMusicVolume(float musicVolume)
+    {
+        this.musicVolume = Math.max(0f, Math.min(1f, musicVolume)); // clamp between 0 and 1
+    }
+
+    public float getSfxVolume()
+    {
+        return sfxVolume;
+    }
+
+    public void setSfxVolume(float sfxVolume)
+    {
+        this.sfxVolume = Math.max(0f, Math.min(1f, sfxVolume)); // clamp between 0 and 1
+    }
+
+    public int getSelectedPlaylist()
+    {
+        return selectedPlaylist;
+    }
+
+    public void setSelectedPlaylist(int selectedPlaylist)
+    {
+        this.selectedPlaylist = selectedPlaylist;
+    }
+
+    public MusicPlaylist getMusicPlaylist()
+    {
+        return selectedPlaylist == 1 ? MusicPlaylist.UNDERTALE : MusicPlaylist.TAYLOR_SWIFT;
     }
 }

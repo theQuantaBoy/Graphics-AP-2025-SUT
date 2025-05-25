@@ -3,6 +3,7 @@ package com.ap_graphics.view;
 import com.ap_graphics.controller.CursorManager;
 import com.ap_graphics.controller.PlayerController;
 import com.ap_graphics.model.*;
+import com.ap_graphics.model.combat.Bullet;
 import com.ap_graphics.model.combat.Enemy;
 import com.ap_graphics.model.combat.EnemyBullet;
 import com.ap_graphics.model.combat.XpOrb;
