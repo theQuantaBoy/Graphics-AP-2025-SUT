@@ -86,6 +86,8 @@ public class GameWorld
 
         xpFont = new BitmapFont();
         xpFont.getData().setScale(1.5f);
+
+        player.resetGameData();
     }
 
     public void setUIContext(Stage stage, Skin skin)

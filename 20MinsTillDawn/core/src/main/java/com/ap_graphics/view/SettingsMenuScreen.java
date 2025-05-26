@@ -6,6 +6,8 @@ import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.MusicPlaylist;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -188,6 +190,18 @@ public class SettingsMenuScreen implements Screen
         content.add(bwToggle).colspan(4);
         content.row();
 
+        TextButton keybindButton = new TextButton("Change Movement Keys", skin);
+        keybindButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                showKeyRemapDialog(player);
+            }
+        });
+        content.add(keybindButton).colspan(4);
+        content.row();
+
         TextButton backButton = new TextButton("Go Back", skin);
         backButton.addListener(new ClickListener()
         {
@@ -203,6 +217,7 @@ public class SettingsMenuScreen implements Screen
                 ));
             }
         });
+
         content.add(backButton).colspan(4).padTop(16);
 
         root.add(content).center().expand();
@@ -241,5 +256,76 @@ public class SettingsMenuScreen implements Screen
         stage.dispose();
         leavesTex.dispose();
         skin.dispose();
+    }
+
+    private void showKeyRemapDialog(Player player) {
+        Dialog dialog = new Dialog("Remap Movement Keys", skin);
+        Table table = new Table(skin);
+        table.defaults().pad(8);
+
+        Label info = new Label("Click a button, then press a new key", skin);
+        table.add(info).colspan(2).center();
+        table.row();
+
+        String[] directions = {"Up", "Down", "Left", "Right"};
+        int[] currentKeys = {
+            player.getMoveUpKey(),
+            player.getMoveDownKey(),
+            player.getMoveLeftKey(),
+            player.getMoveRightKey()
+        };
+
+        TextButton[] buttons = new TextButton[4];
+
+        for (int i = 0; i < 4; i++) {
+            final int index = i;
+            String keyName = Input.Keys.toString(currentKeys[i]);
+            buttons[i] = new TextButton(directions[i] + ": " + keyName, skin);
+            buttons[i].addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Gdx.input.setInputProcessor(new InputAdapter() {
+                        @Override
+                        public boolean keyDown(int keycode) {
+                            if (!player.isValidMovementKey(keycode)) {
+                                buttons[index].setText(directions[index] + ": INVALID");
+                            } else {
+                                switch (index) {
+                                    case 0:
+                                        player.setMoveUpKey(keycode);
+                                        break;
+                                    case 1:
+                                        player.setMoveDownKey(keycode);
+                                        break;
+                                    case 2:
+                                        player.setMoveLeftKey(keycode);
+                                        break;
+                                    case 3:
+                                        player.setMoveRightKey(keycode);
+                                        break;
+                                }
+                                buttons[index].setText(directions[index] + ": " + Input.Keys.toString(keycode));
+                            }
+                            Gdx.input.setInputProcessor(stage); // Restore input
+                            return true;
+                        }
+                    });
+                }
+            });
+            table.add(buttons[i]).width(220).height(40).colspan(2);
+            table.row();
+        }
+
+        TextButton doneButton = new TextButton("Done", skin);
+        doneButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dialog.hide();
+            }
+        });
+
+        table.add(doneButton).center().colspan(2).padTop(16);
+        dialog.getContentTable().add(table);
+        dialog.show(stage);
     }
 }

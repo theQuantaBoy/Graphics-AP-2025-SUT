@@ -4,6 +4,7 @@ import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.combat.Weapon;
 import com.ap_graphics.model.enums.*;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -47,7 +48,6 @@ public class Player
     private float sfxVolume = 1.0f;    // Range: 0.0 to 1.0
     private int selectedPlaylist = 0; // 0 = TAYLOR_SWIFT, 1 = UNDERTALE
 
-    private boolean autoAimEnabled = true;
     private boolean autoReloadEnabled = false;
     private boolean blackAndWhiteMode = false;
 
@@ -66,6 +66,11 @@ public class Player
     private ArrayList<AbilityType> abilityTypes = new ArrayList<>();
 
     private int killCount = 0;
+
+    private int moveUpKey = Input.Keys.W;
+    private int moveDownKey = Input.Keys.S;
+    private int moveLeftKey = Input.Keys.A;
+    private int moveRightKey = Input.Keys.D;
 
     public Player(String username, String password, SecurityQuestionOptions answer)
     {
@@ -374,16 +379,6 @@ public class Player
         return selectedPlaylist == 1 ? MusicPlaylist.UNDERTALE : MusicPlaylist.TAYLOR_SWIFT;
     }
 
-    public boolean isAutoAimEnabled()
-    {
-        return autoAimEnabled;
-    }
-
-    public void setAutoAimEnabled(boolean autoAimEnabled)
-    {
-        this.autoAimEnabled = autoAimEnabled;
-    }
-
     public boolean isBlackAndWhiteMode()
     {
         return blackAndWhiteMode;
@@ -511,5 +506,67 @@ public class Player
     public void addScore(int score)
     {
         this.score += score;
+    }
+
+    public void resetGameData()
+    {
+        this.hp = avatar.getHp() * 10;
+        this.maxHp = avatar.getHp() * 10;
+        this.speedMultiplier = avatar.getSpeedMultiplier();
+
+        this.xp = 0;
+        this.level = 1;
+
+        sinceInvincibility = 0;
+        isInvincible = false;
+
+        isDead = false;
+
+        speedBuffTimer = 0f;
+        damageBuffTimer = 0f;
+
+        isSpeedBuffActive = false;
+        isDamageBuffActive = false;
+
+        killCount = 0;
+
+        abilityTypes.clear();
+    }
+
+    public int getMoveUpKey() { return moveUpKey; }
+    public void setMoveUpKey(int moveUpKey) { this.moveUpKey = moveUpKey; }
+
+    public int getMoveDownKey() { return moveDownKey; }
+    public void setMoveDownKey(int moveDownKey) { this.moveDownKey = moveDownKey; }
+
+    public int getMoveLeftKey() { return moveLeftKey; }
+    public void setMoveLeftKey(int moveLeftKey) { this.moveLeftKey = moveLeftKey; }
+
+    public int getMoveRightKey() { return moveRightKey; }
+    public void setMoveRightKey(int moveRightKey) { this.moveRightKey = moveRightKey; }
+
+    public boolean isValidMovementKey(int keycode)
+    {
+        // Disallow duplicates
+        if (keycode == moveUpKey || keycode == moveDownKey ||
+            keycode == moveLeftKey || keycode == moveRightKey)
+            return false;
+
+        // Disallow used hotkeys
+        if (keycode == Input.Keys.T || keycode == Input.Keys.L ||
+            keycode == Input.Keys.H || keycode == Input.Keys.B ||
+            keycode == Input.Keys.K || keycode == Input.Keys.P ||
+            keycode == Input.Keys.F || keycode == Input.Keys.N ||
+            keycode == Input.Keys.C || keycode == Input.Keys.SPACE)
+            return false;
+
+        // Disallow modifier and function keys
+        if (keycode == Input.Keys.CONTROL_LEFT || keycode == Input.Keys.CONTROL_RIGHT ||
+            keycode == Input.Keys.ALT_LEFT || keycode == Input.Keys.ALT_RIGHT ||
+            keycode == Input.Keys.SHIFT_LEFT || keycode == Input.Keys.SHIFT_RIGHT ||
+            (keycode >= Input.Keys.F1 && keycode <= Input.Keys.F12))
+            return false;
+
+        return true;
     }
 }

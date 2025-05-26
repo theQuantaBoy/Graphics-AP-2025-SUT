@@ -26,7 +26,7 @@ public class LoginMenuScreen implements Screen
     private Texture leavesTex;
     private Image leftLeavesImage, rightLeavesImage;
     private TextField usernameField, passwordField;
-    private TextButton loginButton, forgetPasswordButton;
+    private TextButton loginButton, forgetPasswordButton, goBackButton;
     private Label feedbackLabel;
     private RegisterMenuController registerController = new RegisterMenuController();
     private LoginMenuController loginController = new LoginMenuController();
@@ -133,6 +133,16 @@ public class LoginMenuScreen implements Screen
             }
         });
 
+        goBackButton = new TextButton("Go Back", btnStyle);
+        goBackButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                app.setScreen(new FirstMenuScreen());
+            }
+        });
+
         Table table = new Table(skin);
         table.setFillParent(true);
         table.center();
@@ -155,11 +165,13 @@ public class LoginMenuScreen implements Screen
 
         forgetPasswordButton.pack();
         loginButton.pack();
+        goBackButton.pack();
 
-        float maxWidth = Math.max(forgetPasswordButton.getWidth(), loginButton.getWidth()) + 40;
+        float maxWidth = Math.max(Math.max(forgetPasswordButton.getWidth(), loginButton.getWidth()), goBackButton.getWidth()) + 40;
 
         table.add(forgetPasswordButton).colspan(2).center().width(maxWidth).height(50).padBottom(10).row();
         table.add(loginButton).colspan(2).center().width(maxWidth).height(50).padTop(0).row();
+        table.add(goBackButton).colspan(2).center().width(maxWidth).height(50);
 
         stage.addActor(table);
 

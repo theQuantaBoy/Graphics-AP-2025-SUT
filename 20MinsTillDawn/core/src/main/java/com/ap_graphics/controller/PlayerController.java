@@ -55,26 +55,25 @@ public class PlayerController
         float speed = player.getSpeed();
         boolean moved = false;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        if (Gdx.input.isKeyPressed(player.getMoveUpKey())) {
             player.updateLocation(0, +speed);
             moved = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        if (Gdx.input.isKeyPressed(player.getMoveDownKey())) {
             player.updateLocation(0, -speed);
             moved = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(player.getMoveRightKey())) {
             player.updateLocation(+speed, 0);
             player.setHeadedRight(true);
             moved = true;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyPressed(player.getMoveLeftKey())) {
             player.updateLocation(-speed, 0);
             player.setHeadedRight(false);
             moved = true;
         }
 
-        // 🦶 Play walking sound if moving and cooldown passed
         if (moved) {
             footstepTimer -= delta;
             if (footstepTimer <= 0f) {

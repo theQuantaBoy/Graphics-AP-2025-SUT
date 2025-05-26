@@ -27,7 +27,7 @@ public class SignUpMenuScreen implements Screen
     private Texture leavesTex;
     private Image leftLeavesImage, rightLeavesImage;
     private TextField usernameField, passwordField;
-    private TextButton registerButton;
+    private TextButton registerButton, goBackButton;
     private Label feedbackLabel;
     private RegisterMenuController controller = new RegisterMenuController();
     private Skin skin = new Skin(Gdx.files.internal("skins/quantum-horizon/skin/quantum-horizon-ui.json"));
@@ -88,6 +88,7 @@ public class SignUpMenuScreen implements Screen
         TextButton.TextButtonStyle btnStyle = skin.get(TextButton.TextButtonStyle.class);
         btnStyle.font = TillDawn.menuFont;
         registerButton = new TextButton("Register", btnStyle);
+        goBackButton = new TextButton("Go Back", btnStyle);
 
         registerButton.addListener(new ClickListener()
         {
@@ -118,6 +119,15 @@ public class SignUpMenuScreen implements Screen
             }
         });
 
+        goBackButton.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                app.setScreen(new FirstMenuScreen());
+            }
+        });
+
         Table table = new Table(skin);
         table.setFillParent(true);
         table.center();
@@ -141,6 +151,13 @@ public class SignUpMenuScreen implements Screen
         registerButton.pack(); // Ensure button sizes to text
         float buttonWidth = registerButton.getWidth() + 40; // Add padding
         table.add(registerButton).colspan(2).center().width(buttonWidth).height(50).padTop(10);
+
+        table.row();
+
+        goBackButton.pack(); // Ensure button sizes to text
+        float buttonWidth2 = goBackButton.getWidth() + 40; // Add padding
+        table.add(goBackButton).colspan(2).center().width(buttonWidth2).height(50).padTop(10);
+
 
         stage.addActor(table);
 
