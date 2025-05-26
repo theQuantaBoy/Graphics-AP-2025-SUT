@@ -9,13 +9,16 @@ import com.ap_graphics.model.enums.SoundEffectType;
 import com.ap_graphics.view.ChooseAbilityDialog;
 import com.ap_graphics.view.EndGameDialog;
 import com.ap_graphics.view.PauseMenuDialog;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -66,13 +69,18 @@ public class GameWorld
     private boolean levelUpAnimationOver = false;
     private boolean pauseIsSelected = false;
 
-    public GameWorld(Player player, float w, float h, float gameTime)
+    private OrthographicCamera camera;
+
+    private boolean autoAimOn = false;
+
+    public GameWorld(Player player, float w, float h, float gameTime, OrthographicCamera camera)
     {
         instance = this;
         this.player = player;
         this.worldWidth = w;
         this.worldHeight = h;
         this.gameTime = gameTime;
+        this.camera = camera;
 
         spawnTrees(10);
 
@@ -145,6 +153,8 @@ public class GameWorld
         player.getCurrentWeapon().update(delta);
         updateAnimations(delta);
         updateAttachedAnimations(delta);
+
+        doAutoAim();
     }
 
     public void render(SpriteBatch batch, float delta)
@@ -539,5 +549,75 @@ public class GameWorld
         int score = (int) totalGameTime * player.getKillCount();
         player.addScore(score);
         return score;
+    }
+
+    public boolean isInMiddleQuarter(float targetX, float targetY, OrthographicCamera camera)
+    {
+        float halfWidth = (camera.viewportWidth * camera.zoom) / 2f;
+        float halfHeight = (camera.viewportHeight * camera.zoom) / 2f;
+
+        float centerX = camera.position.x;
+        float centerY = camera.position.y;
+
+        float quarterLeft = centerX - halfWidth / 2f;
+        float quarterRight = centerX + halfWidth / 2f;
+        float quarterBottom = centerY - halfHeight / 2f;
+        float quarterTop = centerY + halfHeight / 2f;
+
+        return targetX >= quarterLeft && targetX <= quarterRight &&
+            targetY >= quarterBottom && targetY <= quarterTop;
+    }
+
+    public Enemy findClosestEnemyInMiddleQuarter(Player player, List<Enemy> enemies, OrthographicCamera camera)
+    {
+        Enemy closest = null;
+        float minDist = Float.MAX_VALUE;
+
+        for (Enemy enemy : enemies)
+        {
+            if (!(enemy instanceof Tree))
+            {
+                float ex = enemy.getPosition().x;
+                float ey = enemy.getPosition().y;
+
+                if (!isInMiddleQuarter(ex, ey, camera)) continue;
+
+                float dx = player.getPosX() - ex;
+                float dy = player.getPosY() - ey;
+                float dist = dx * dx + dy * dy;
+
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    closest = enemy;
+                }
+            }
+        }
+
+        return closest;
+    }
+
+    public void doAutoAim()
+    {
+        if (autoAimOn)
+        {
+            Enemy target = findClosestEnemyInMiddleQuarter(player, enemies, camera);
+            if (target != null)
+            {
+                Vector3 screenCoords = camera.project(new Vector3(target.getPosition(), 0));
+                int flippedY = Gdx.graphics.getHeight() - (int) screenCoords.y;
+                Gdx.input.setCursorPosition((int) screenCoords.x, flippedY);
+            }
+        }
+    }
+
+    public void flipAutoAim()
+    {
+        autoAimOn = !autoAimOn;
+    }
+
+    public boolean isAutoAimOn()
+    {
+        return autoAimOn;
     }
 }

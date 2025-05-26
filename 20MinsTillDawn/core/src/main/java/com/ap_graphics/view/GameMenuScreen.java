@@ -39,7 +39,7 @@ public class GameMenuScreen implements Screen
     private Texture background;
 
     private final Player player;
-    private Label timerLabel, ammoLabel, killLabel, xpLabel, levelLabel, hpLabel;
+    private Label timerLabel, ammoLabel, killLabel, xpLabel, levelLabel, hpLabel, autoAimLabel, autoReloadLabel;
 
     private CursorManager cursorManager;
 
@@ -56,14 +56,14 @@ public class GameMenuScreen implements Screen
 
         this.player = App.getCurrentPlayer();
 
-        this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight(), player.getCurrentGameDuration() * 60);
-        App.setGame(gameWorld);
-
-        GameWorld.getInstance().setUIContext(stage, skin);
-
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.zoom = 0.5f; // 0.5 means 2.0x zoom (zoom in)
+
+        this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight(), player.getCurrentGameDuration() * 60, camera);
+        App.setGame(gameWorld);
+
+        GameWorld.getInstance().setUIContext(stage, skin);
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/ChevyRay.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -81,6 +81,8 @@ public class GameMenuScreen implements Screen
         xpLabel = new Label("", labelStyle);
         levelLabel = new Label("", labelStyle);
         hpLabel = new Label("", labelStyle);
+        autoAimLabel = new Label("", labelStyle);
+        autoReloadLabel = new Label("", labelStyle);
 
         Table uiTable = new Table();
         uiTable.top().left();
@@ -91,6 +93,8 @@ public class GameMenuScreen implements Screen
         uiTable.add(xpLabel).pad(10).left().row();
         uiTable.add(levelLabel).pad(10).left().row();
         uiTable.add(hpLabel).pad(10).left().row();
+        uiTable.add(autoAimLabel).pad(10).left().row();
+        uiTable.add(autoReloadLabel).pad(10).left().row();
         stage.addActor(uiTable);
 
         cursorManager = new CursorManager();
@@ -144,6 +148,8 @@ public class GameMenuScreen implements Screen
         xpLabel.setText("XP: " + player.getXp());
         levelLabel.setText("Level: " + player.getLevel());
         hpLabel.setText("HP: " + player.getCurrentHP() + " / " + player.getMaxHP());
+        autoAimLabel.setText("Auto Aim: " + (gameWorld.isAutoAimOn() ? "On" : "Off"));
+        autoReloadLabel.setText("Auto Reload: " + (player.isAutoReloadEnabled() ? "On" : "Off"));
 
         Vector3 mouseScreenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         Vector3 mouseWorldPos = camera.unproject(mouseScreenPos);
@@ -205,6 +211,9 @@ public class GameMenuScreen implements Screen
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.N))
             {
                 gameWorld.spawnEyebat();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.C))
+            {
+                gameWorld.flipAutoAim();
             }
         }
 
