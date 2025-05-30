@@ -11,10 +11,13 @@ import com.ap_graphics.view.EndGameDialog;
 import com.ap_graphics.view.PauseMenuDialog;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -73,7 +76,12 @@ public class GameWorld
 
     private boolean autoAimOn = false;
 
-    public GameWorld(Player player, float w, float h, float gameTime, OrthographicCamera camera)
+    private ShieldZone shieldZone;
+    private float shieldTickTimer = 0f;
+
+    private final Texture background;
+
+    public GameWorld(Player player, float w, float h, float gameTime, OrthographicCamera camera, Texture background)
     {
         instance = this;
         this.player = player;
@@ -81,6 +89,7 @@ public class GameWorld
         this.worldHeight = h;
         this.gameTime = gameTime;
         this.camera = camera;
+        this.background = background;
 
         spawnTrees(10);
 
@@ -155,6 +164,7 @@ public class GameWorld
         player.getCurrentWeapon().update(delta);
         updateAnimations(delta);
         updateAttachedAnimations(delta);
+        updateShield(delta);
 
         doAutoAim();
     }
@@ -249,6 +259,7 @@ public class GameWorld
                             if (enemy instanceof Elder)
                             {
                                 elderExists = false;
+                                shieldZone = null;
                             }
                             SoundManager.getInstance().playSFX(SoundEffectType.EXPLOSION_BLOOD_01);
                             xpOrbs.add(new XpOrb(enemy.getPosition().x, enemy.getPosition().y));
@@ -424,6 +435,14 @@ public class GameWorld
     {
         Vector2 spawn = getRandomSpawnPositionOutsideCamera();
         enemies.add(new Elder(spawn.x, spawn.y));
+
+        float mapWidth = background.getWidth();
+        float mapHeight = background.getHeight();
+        float centerX = mapWidth / 2f;
+        float centerY = mapHeight / 2f;
+
+        shieldZone = new ShieldZone(centerX, centerY, mapWidth, mapHeight, 20f);
+
         elderExists = true;
         SoundManager.getInstance().playSFX(SoundEffectType.SPELL_EXPLOSION_MAGIC_02);
     }
@@ -621,5 +640,52 @@ public class GameWorld
     public boolean isAutoAimOn()
     {
         return autoAimOn;
+    }
+
+    private void updateShield(float delta)
+    {
+        if (shieldZone != null)
+        {
+            shieldZone.update(delta);
+            shieldTickTimer += delta;
+
+            if (shieldTickTimer >= 1.0f)
+            {
+                shieldTickTimer = 0;
+                if (shieldZone.isOutside(player.getPosX(), player.getPosY()))
+                {
+                    player.takeDamage(5);
+                    addFloatingText("-5", player.getPosition(), Color.RED);
+                    SoundManager.getInstance().playSFX(SoundEffectType.DEBUFF_SPEED);
+                }
+            }
+        }
+    }
+
+    public void drawShield(ShapeRenderer shapeRenderer) {
+        if (shieldZone != null) {
+            Rectangle r = shieldZone.getBounds();
+            float pulseAlpha = 0.15f + 0.05f * MathUtils.sin(totalGameTime * 4f); // dimmer, but still pulsing
+
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            shapeRenderer.setProjectionMatrix(camera.combined);
+
+            // 🔴 Fill with semi-transparent red
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(1f, 0f, 0f, pulseAlpha);
+            shapeRenderer.rect(r.x, r.y, r.width, r.height);
+            shapeRenderer.end();
+
+            // 🔴 Border with solid bright red (no transparency)
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+            float borderAlpha = 0.6f + 0.4f * MathUtils.sin(totalGameTime * 6f);
+            shapeRenderer.setColor(1f, 0.2f, 0.2f, borderAlpha);
+
+            shapeRenderer.rect(r.x, r.y, r.width, r.height);
+            shapeRenderer.end();
+
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+        }
     }
 }

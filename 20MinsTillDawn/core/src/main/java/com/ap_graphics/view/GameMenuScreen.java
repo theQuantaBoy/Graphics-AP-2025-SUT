@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -44,6 +45,7 @@ public class GameMenuScreen implements Screen
     private CursorManager cursorManager;
 
     BitmapFont font;
+    private ShapeRenderer shapeRenderer;
 
     public GameMenuScreen(Skin skin)
     {
@@ -60,7 +62,9 @@ public class GameMenuScreen implements Screen
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.zoom = 0.5f; // 0.5 means 2.0x zoom (zoom in)
 
-        this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight(), player.getCurrentGameDuration() * 60, camera);
+        shapeRenderer = new ShapeRenderer();
+
+        this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight(), player.getCurrentGameDuration() * 60, camera, background);
         App.setGame(gameWorld);
 
         GameWorld.getInstance().setUIContext(stage, skin);
@@ -214,8 +218,14 @@ public class GameMenuScreen implements Screen
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.C))
             {
                 gameWorld.flipAutoAim();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.M))
+            {
+                player.setAutoReloadEnabled(!player.isAutoReloadEnabled());
             }
         }
+
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        gameWorld.drawShield(shapeRenderer);
 
         batch.end();
 

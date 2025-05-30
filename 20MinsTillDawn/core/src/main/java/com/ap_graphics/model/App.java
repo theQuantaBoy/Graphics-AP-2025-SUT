@@ -8,6 +8,8 @@ public class App
     private static ArrayList<Player> players = new ArrayList<>();
     private static GameWorld game;
 
+    private static boolean isPlayingAsGuest = false;
+
     public static Player findPlayer(String username)
     {
         for (Player player : players)
@@ -44,5 +46,15 @@ public class App
     public static void setGame(GameWorld game)
     {
         App.game = game;
+    }
+
+    public static boolean isPlayingAsGuest()
+    {
+        return isPlayingAsGuest;
+    }
+
+    public static void setPlayingAsGuest(boolean playingAsGuest)
+    {
+        isPlayingAsGuest = playingAsGuest;
     }
 }

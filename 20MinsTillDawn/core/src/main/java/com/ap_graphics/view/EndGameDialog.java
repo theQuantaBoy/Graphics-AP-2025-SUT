@@ -5,6 +5,7 @@ import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.SoundEffectType;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -58,8 +59,18 @@ public class EndGameDialog extends Dialog
             public void clicked(InputEvent event, float x, float y)
             {
                 SoundManager.getInstance().playSFX(SoundEffectType.UI_CLICK_36);
-                TillDawn.getGame().setScreen(new MainMenuScreen());
                 App.setGame(null);
+
+                if (App.isPlayingAsGuest())
+                {
+                    App.setCurrentPlayer(null);
+                    App.setPlayingAsGuest(false);
+                    TillDawn.getGame().setScreen(new FirstMenuScreen());
+                } else
+                {
+                    TillDawn.getGame().setScreen(new MainMenuScreen());
+                }
+
                 remove();
             }
         });

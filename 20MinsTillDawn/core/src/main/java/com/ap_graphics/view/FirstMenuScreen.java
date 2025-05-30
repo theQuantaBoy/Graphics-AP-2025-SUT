@@ -1,12 +1,16 @@
 package com.ap_graphics.view;
 
 import com.ap_graphics.TillDawn;
+import com.ap_graphics.controller.PlayerController;
 import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.App;
+import com.ap_graphics.model.GameWorld;
+import com.ap_graphics.model.Player;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -15,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.graphics.Color;
@@ -27,7 +32,7 @@ public class FirstMenuScreen implements Screen
     private Stage stage;
     private Texture titleTex, leavesTex;
     private Image titleImage, leftLeavesImage, rightLeavesImage;
-    private Label logInLabel, signUpLabel, quitLabel;
+    private Label logInLabel, signUpLabel, guestPlayLabel, quitLabel;
 
     private Texture eyeTex1, eyeTex2, eyeTex3;
     private Animation<TextureRegion> eyeBlinkAnimation;
@@ -35,6 +40,8 @@ public class FirstMenuScreen implements Screen
     private Image eyeBlinkImage;
 
     private float baseEyeY;
+
+    private Skin skin;
 
     public FirstMenuScreen()
     {
@@ -66,6 +73,8 @@ public class FirstMenuScreen implements Screen
         eyeBlinkImage = new Image(eyeBlinkAnimation.getKeyFrame(0));
         stage.addActor(eyeBlinkImage);
 
+        skin = new Skin(Gdx.files.internal("skins/quantum-horizon/skin/quantum-horizon-ui.json"));
+
         titleImage = new Image(titleTex);
         stage.addActor(titleImage);
 
@@ -84,6 +93,7 @@ public class FirstMenuScreen implements Screen
 
         logInLabel = new Label("Log In", menuStyle);
         signUpLabel = new Label("Sign Up", menuStyle);
+        guestPlayLabel = new Label("Play as Guest", menuStyle);
         quitLabel = new Label("Quit", menuStyle);
 
         addHoverAndClick(logInLabel, () -> {
@@ -97,12 +107,20 @@ public class FirstMenuScreen implements Screen
             app.setScreen(new SignUpMenuScreen());
         });
 
+        addHoverAndClick(guestPlayLabel, () -> {
+            Player player = new Player("guest", "", null);
+            App.setCurrentPlayer(player);
+            App.setPlayingAsGuest(true);
+           app.setScreen(new GameMenuScreen(skin));
+        });
+
         addHoverAndClick(quitLabel, () -> {
             Gdx.app.exit();
         });
 
         stage.addActor(logInLabel);
         stage.addActor(signUpLabel);
+        stage.addActor(guestPlayLabel);
         stage.addActor(quitLabel);
 
     }
@@ -157,7 +175,8 @@ public class FirstMenuScreen implements Screen
 
         logInLabel.setPosition(centerX - logInLabel.getWidth() / 2f, height * 0.36f + spacing);
         signUpLabel.setPosition(centerX - signUpLabel.getWidth() / 2f, height * 0.36f);
-        quitLabel.setPosition(centerX - quitLabel.getWidth() / 2f, height * 0.36f - spacing);
+        guestPlayLabel.setPosition(centerX - guestPlayLabel.getWidth() / 2f, height * 0.36f - spacing);
+        quitLabel.setPosition(centerX - quitLabel.getWidth() / 2f, height * 0.36f - 2 * spacing);
     }
 
     @Override
