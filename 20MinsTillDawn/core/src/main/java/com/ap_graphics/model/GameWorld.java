@@ -81,6 +81,8 @@ public class GameWorld
 
     private final Texture background;
 
+    private final PlayerLightMask playerLightMask;
+
     public GameWorld(Player player, float w, float h, float gameTime, OrthographicCamera camera, Texture background)
     {
         instance = this;
@@ -90,6 +92,8 @@ public class GameWorld
         this.gameTime = gameTime;
         this.camera = camera;
         this.background = background;
+
+        playerLightMask = new PlayerLightMask(180f); // adjust for visible radius
 
         spawnTrees(10);
 
@@ -405,9 +409,7 @@ public class GameWorld
                 SoundManager.getInstance().playSFX(SoundEffectType.COINS_10);
                 addFloatingText("+3", new Vector2(player.getPosX(), player.getPosY()), Color.GREEN);
                 orbIter.remove();
-            }
-
-            if (orb.shouldRemove())
+            } else if (orb.shouldRemove())
             {
                 orbIter.remove();
             }
@@ -545,13 +547,16 @@ public class GameWorld
 
     public void killAllEnemies()
     {
-        for (Iterator<Enemy> it = enemies.iterator(); it.hasNext(); ) {
+        for (Iterator<Enemy> it = enemies.iterator(); it.hasNext(); )
+        {
             Enemy a = it.next();
             if (!(a instanceof Tree))
             {
                 it.remove();
             }
         }
+
+        shieldZone = null;
         SoundManager.getInstance().playSFX(SoundEffectType.EXPLOSION_BLOOD_01);
     }
 
@@ -687,5 +692,10 @@ public class GameWorld
 
             Gdx.gl.glDisable(GL20.GL_BLEND);
         }
+    }
+
+    public PlayerLightMask getPlayerLightMask()
+    {
+        return playerLightMask;
     }
 }

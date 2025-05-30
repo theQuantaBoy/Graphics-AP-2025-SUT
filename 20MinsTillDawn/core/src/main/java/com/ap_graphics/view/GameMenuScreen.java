@@ -227,6 +227,10 @@ public class GameMenuScreen implements Screen
         shapeRenderer.setProjectionMatrix(camera.combined);
         gameWorld.drawShield(shapeRenderer);
 
+        Player p = App.getCurrentPlayer();
+        Vector2 playerPos = new Vector2(player.getPosX(), player.getPosY());
+        gameWorld.getPlayerLightMask().draw(shapeRenderer, playerPos, camera);
+
         batch.end();
 
         stage.act(delta);
