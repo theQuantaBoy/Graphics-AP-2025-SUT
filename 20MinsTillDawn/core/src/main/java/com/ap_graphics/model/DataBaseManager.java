@@ -27,7 +27,8 @@ public class DataBaseManager {
                     "sfxEnabled INTEGER," +
                     "playlist INTEGER," +
                     "autoReload INTEGER," +
-                    "bwMode INTEGER" +
+                    "bwMode INTEGER," +
+                    "score INTEGER" +
                     ");";
 
             stmt.execute(sql);
@@ -41,8 +42,8 @@ public class DataBaseManager {
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
             String insertSQL =
                 "INSERT OR REPLACE INTO players " +
-                    "(username, password, answer, avatar, moveUp, moveDown, moveLeft, moveRight, musicVolume, sfxEnabled, playlist, autoReload, bwMode) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "(username, password, answer, avatar, moveUp, moveDown, moveLeft, moveRight, musicVolume, sfxEnabled, playlist, autoReload, bwMode, score) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement pstmt = conn.prepareStatement(insertSQL);
 
@@ -60,6 +61,7 @@ public class DataBaseManager {
                 pstmt.setInt(11, p.getSelectedPlaylist());
                 pstmt.setBoolean(12, p.isAutoReloadEnabled());
                 pstmt.setBoolean(13, p.isBlackAndWhiteMode());
+                pstmt.setInt(14, p.getScore());
                 pstmt.executeUpdate();
             }
 
@@ -90,6 +92,7 @@ public class DataBaseManager {
                 p.setSelectedPlaylist(rs.getInt("playlist"));
                 p.setAutoReloadEnabled(rs.getBoolean("autoReload"));
                 p.setBlackAndWhiteMode(rs.getBoolean("bwMode"));
+                p.setScore(rs.getInt("score"));
 
                 players.add(p);
             }

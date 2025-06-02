@@ -569,4 +569,9 @@ public class Player
 
         return true;
     }
+
+    public void setScore(int score)
+    {
+        this.score = score;
+    }
 }

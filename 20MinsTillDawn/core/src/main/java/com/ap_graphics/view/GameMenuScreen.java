@@ -123,19 +123,19 @@ public class GameMenuScreen implements Screen
     public void render(float delta) {
         Player player = App.getCurrentPlayer();
 
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         camera.position.set(player.getPosX(), player.getPosY(), 0);
         camera.update();
 
         batch.setProjectionMatrix(camera.combined);
 
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        gameWorld.update(delta);
 
         batch.begin();
 
         batch.draw(background, 0, 0);
-
-        gameWorld.update(delta);
 
         int remaining = gameWorld.getRemainingTime();
         int minutes = remaining / 60;
@@ -224,14 +224,14 @@ public class GameMenuScreen implements Screen
             }
         }
 
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        gameWorld.drawShield(shapeRenderer);
+        batch.end();
 
-        Player p = App.getCurrentPlayer();
+        shapeRenderer.setProjectionMatrix(camera.combined);
+
         Vector2 playerPos = new Vector2(player.getPosX(), player.getPosY());
         gameWorld.getPlayerLightMask().draw(shapeRenderer, playerPos, camera);
 
-        batch.end();
+        gameWorld.drawShield(shapeRenderer);
 
         stage.act(delta);
         stage.draw();

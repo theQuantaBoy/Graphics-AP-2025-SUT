@@ -675,13 +675,11 @@ public class GameWorld
             Gdx.gl.glEnable(GL20.GL_BLEND);
             shapeRenderer.setProjectionMatrix(camera.combined);
 
-            // 🔴 Fill with semi-transparent red
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(1f, 0f, 0f, pulseAlpha);
             shapeRenderer.rect(r.x, r.y, r.width, r.height);
             shapeRenderer.end();
 
-            // 🔴 Border with solid bright red (no transparency)
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
             float borderAlpha = 0.6f + 0.4f * MathUtils.sin(totalGameTime * 6f);
