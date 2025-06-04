@@ -5,6 +5,7 @@ import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.combat.Weapon;
 import com.ap_graphics.model.enums.Avatar;
+import com.ap_graphics.model.enums.MenuTexts;
 import com.ap_graphics.model.enums.WeaponType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -65,9 +66,9 @@ public class PreGameMenuScreen implements Screen
         stage.addActor(rightLeavesImage);
 
         Label.LabelStyle titleStyle = new Label.LabelStyle();
-        titleStyle.font = TillDawn.menuFont;
+        titleStyle.font = App.getCurrentPlayer().getFont();
         titleStyle.fontColor = com.badlogic.gdx.graphics.Color.WHITE;
-        Label title = new Label("Pre Game Menu", titleStyle);
+        Label title = new Label(MenuTexts.PRE_GAME_MENU.getText(), titleStyle);
 
         heroLabel = new Label("", skin);
         heroImage = new Image();
@@ -144,7 +145,7 @@ public class PreGameMenuScreen implements Screen
             }
         });
 
-        TextButton startButton = new TextButton("Start New Game", skin);
+        TextButton startButton = new TextButton(MenuTexts.START_NEW_GAME.getText(), skin);
         startButton.addListener(new ClickListener()
         {
             @Override
@@ -160,7 +161,7 @@ public class PreGameMenuScreen implements Screen
             }
         });
 
-        TextButton backButton = new TextButton("Go Back", skin);
+        TextButton backButton = new TextButton(MenuTexts.GO_BACK.getText(), skin);
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y)
@@ -221,7 +222,7 @@ public class PreGameMenuScreen implements Screen
 
     private void updateTimeView()
     {
-        timeLabel.setText(timeOptions[timeIndex] + " minutes");
+        timeLabel.setText(timeOptions[timeIndex] + MenuTexts.MINUTES.getText());
     }
 
     @Override

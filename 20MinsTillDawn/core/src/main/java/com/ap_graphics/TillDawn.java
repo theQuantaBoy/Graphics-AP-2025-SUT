@@ -19,7 +19,9 @@ public class TillDawn extends com.badlogic.gdx.Game
 {
     private static TillDawn game;
     private static SpriteBatch batch;
+
     public static BitmapFont menuFont;
+    public static BitmapFont japaneseFont;
 
     @Override
     public void create()
@@ -71,10 +73,30 @@ public class TillDawn extends com.badlogic.gdx.Game
 
     public static void loadFonts()
     {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/ChevyRay.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 40;
-        menuFont = generator.generateFont(parameter);
-        generator.dispose();
+        // English font
+        FreeTypeFontGenerator generatorEn = new FreeTypeFontGenerator(Gdx.files.internal("fonts/ChevyRay.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter paramEn = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        paramEn.size = 40;
+        menuFont = generatorEn.generateFont(paramEn);
+        generatorEn.dispose();
+
+        // Japanese font
+        FreeTypeFontGenerator generatorJp = new FreeTypeFontGenerator(Gdx.files.internal("fonts/MPLUS1p-Regular.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter paramJp = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        paramJp.size = 36;
+        paramJp.characters = FreeTypeFontGenerator.DEFAULT_CHARS +
+            // Hiragana
+            "あいうえおかきくけこさしすせそたちつてとなにぬねの" +
+            "はひふへほまみむめもやゆよらりるれろわをん" +
+            // Katakana
+            "アイウエオカキクケコサシスセソタチツテトナニヌネノ" +
+            "ハヒフヘホマミムメモヤユヨラリルレロワヲン" +
+            "ガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ" +
+            // Common punctuation
+            "ー「」、。・" +
+            // Game UI Kanji
+            "日本語設定開始終了保存読込敵勇者武器弾体力時間経験値";
+        japaneseFont = generatorJp.generateFont(paramJp);
+        generatorJp.dispose();
     }
 }

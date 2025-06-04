@@ -3,6 +3,7 @@ package com.ap_graphics.view;
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
+import com.ap_graphics.model.enums.MenuTexts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -34,32 +35,32 @@ public class MainMenuScreen implements Screen
         skin = new Skin(Gdx.files.internal("skins/quantum-horizon/skin/quantum-horizon-ui.json"));
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = TillDawn.menuFont;
+        labelStyle.font = player.getFont();
 
-        Label titleLabel = new Label("Main Menu", labelStyle);
+        Label titleLabel = new Label(MenuTexts.MAIN_MENU.getText(), labelStyle);
         titleLabel.setFontScale(2.1f);
         titleLabel.setColor(Color.RED);
 
         Label usernameLabel = new Label(player.getUsername(), labelStyle);
         usernameLabel.setFontScale(1.5f);
-        Label scoreLabel = new Label("Score: " + player.getScore(), labelStyle);
+        Label scoreLabel = new Label(MenuTexts.SCORE.getText() + player.getScore(), labelStyle);
         scoreLabel.setFontScale(1.5f);
 
         TextButton.TextButtonStyle btnStyle = skin.get(TextButton.TextButtonStyle.class);
-        btnStyle.font = TillDawn.menuFont;
+        btnStyle.font = player.getFont();
 
-        TextButton settingsButton = new TextButton("Settings", btnStyle);
-        TextButton scoreboardButton = new TextButton("Scoreboard", btnStyle);
-        TextButton newGameButton = new TextButton("New Game", btnStyle);
-        TextButton continueButton = new TextButton("Continue", btnStyle);
-        TextButton hintsButton = new TextButton("Hints", btnStyle);
+        TextButton settingsButton = new TextButton(MenuTexts.SETTINGS.getText(), btnStyle);
+        TextButton scoreboardButton = new TextButton(MenuTexts.SCORE_BOARD.getText(), btnStyle);
+        TextButton newGameButton = new TextButton(MenuTexts.NEW_GAME.getText(), btnStyle);
+        TextButton continueButton = new TextButton(MenuTexts.CONTINUE.getText(), btnStyle);
+        TextButton hintsButton = new TextButton(MenuTexts.HINTS.getText(), btnStyle);
 
         TextButton.TextButtonStyle logoutStyle = new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
-        logoutStyle.font = TillDawn.menuFont;
+        logoutStyle.font = player.getFont();
         logoutStyle.fontColor = Color.BLUE;
-        TextButton logoutButton = new TextButton("Logout", logoutStyle);
+        TextButton logoutButton = new TextButton(MenuTexts.LOGOUT.getText(), logoutStyle);
 
-        TextButton profileButton = new TextButton("Profile", btnStyle);
+        TextButton profileButton = new TextButton(MenuTexts.PROFILE.getText(), btnStyle);
 
         logoutButton.addListener(new ClickListener()
         {
@@ -121,7 +122,7 @@ public class MainMenuScreen implements Screen
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-                app.setScreen(new ProfileMenuScreen(skin));
+                app.setScreen(new ProfileMenuScreen());
             }
         });
 

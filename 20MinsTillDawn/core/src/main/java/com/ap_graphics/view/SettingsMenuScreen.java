@@ -4,6 +4,7 @@ import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
+import com.ap_graphics.model.enums.MenuTexts;
 import com.ap_graphics.model.enums.MusicPlaylist;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -35,7 +36,7 @@ public class SettingsMenuScreen implements Screen
         Gdx.input.setInputProcessor(stage);
 
         skin = new Skin(Gdx.files.internal("skins/quantum-horizon/skin/quantum-horizon-ui.json"));
-        skin.get(Label.LabelStyle.class).font = TillDawn.menuFont;
+        skin.get(Label.LabelStyle.class).font = App.getCurrentPlayer().getFont();
 
         Player player = App.getCurrentPlayer();
 
@@ -62,12 +63,12 @@ public class SettingsMenuScreen implements Screen
         content.center();
         content.defaults().pad(8);
 
-        Label title = new Label("Settings Menu", skin);
+        Label title = new Label(MenuTexts.SETTINGS_MENU.getText(), skin);
         title.setFontScale(1.5f);
         content.add(title).colspan(4).padBottom(40);
         content.row();
 
-        Label volumeLabel = new Label("Music Volume", skin);
+        Label volumeLabel = new Label(MenuTexts.MUSIC_VOLUME.getText(), skin);
         Slider volumeSlider = new Slider(0f, 1f, 0.01f, false, skin);
         Label volumePercent = new Label("" + (int)(player.getMusicVolume() * 100) + " %", skin);
         volumeSlider.setValue(player.getMusicVolume());
@@ -85,7 +86,7 @@ public class SettingsMenuScreen implements Screen
         content.add(volumePercent);
         content.row();
 
-        Label playlistLabel = new Label("Playlist:", skin);
+        Label playlistLabel = new Label(MenuTexts.PLAYLIST.getText(), skin);
         Label playlistName = new Label(player.getMusicPlaylist().name(), skin);
         Label songName = new Label(SoundManager.getInstance().getCurrentTrackName(), skin);
         TextButton prevButton = new TextButton("<", skin);
@@ -125,7 +126,7 @@ public class SettingsMenuScreen implements Screen
         content.add(nextButton);
         content.row();
 
-        Label songLabel = new Label("Song:", skin);
+        Label songLabel = new Label(MenuTexts.SONG.getText(), skin);
         TextButton songPrev = new TextButton("<", skin);
         TextButton songNext = new TextButton(">", skin);
 
@@ -155,9 +156,9 @@ public class SettingsMenuScreen implements Screen
         content.row();
 
         CheckBox.CheckBoxStyle checkboxStyle = skin.get(CheckBox.CheckBoxStyle.class);
-        checkboxStyle.font = TillDawn.menuFont;
+        checkboxStyle.font = App.getCurrentPlayer().getFont();
 
-        CheckBox sfxToggle = new CheckBox("Enable SFX", skin);
+        CheckBox sfxToggle = new CheckBox(MenuTexts.ENABLE_SFX.getText(), skin);
         sfxToggle.setStyle(checkboxStyle);
         sfxToggle.setChecked(player.isSfxEnabled());
         sfxToggle.addListener(e ->
@@ -168,7 +169,7 @@ public class SettingsMenuScreen implements Screen
         content.add(sfxToggle).colspan(4);
         content.row();
 
-        CheckBox autoReloadToggle = new CheckBox("Enable Auto-Reload", skin);
+        CheckBox autoReloadToggle = new CheckBox(MenuTexts.ENABLE_AUTO_RELOAD.getText(), skin);
         autoReloadToggle.setStyle(checkboxStyle);
         autoReloadToggle.setChecked(player.isAutoReloadEnabled());
         autoReloadToggle.addListener(e ->
@@ -179,7 +180,22 @@ public class SettingsMenuScreen implements Screen
         content.add(autoReloadToggle).colspan(4);
         content.row();
 
-        CheckBox bwToggle = new CheckBox("Black & White Mode", skin);
+        CheckBox languageToggle = new CheckBox(MenuTexts.LANGUAGE_ENGLISH.getText(), skin);
+        languageToggle.setStyle(checkboxStyle);
+        languageToggle.setChecked(player.isAutoReloadEnabled());
+        languageToggle.addListener(new ClickListener()
+        {
+            @Override
+            public void clicked(InputEvent event, float x, float y)
+            {
+                player.changeLanguage();
+                app.setScreen(new SettingsMenuScreen());
+            }
+        });
+        content.add(languageToggle).colspan(4);
+        content.row();
+
+        CheckBox bwToggle = new CheckBox(MenuTexts.BW_MODE.getText(), skin);
         bwToggle.setStyle(checkboxStyle);
         bwToggle.setChecked(player.isBlackAndWhiteMode());
         bwToggle.addListener(e ->
@@ -190,7 +206,7 @@ public class SettingsMenuScreen implements Screen
         content.add(bwToggle).colspan(4);
         content.row();
 
-        TextButton keybindButton = new TextButton("Change Movement Keys", skin);
+        TextButton keybindButton = new TextButton(MenuTexts.CHANGE_MOVEMENT_KEYS.getText(), skin);
         keybindButton.addListener(new ClickListener()
         {
             @Override
@@ -202,7 +218,7 @@ public class SettingsMenuScreen implements Screen
         content.add(keybindButton).colspan(4);
         content.row();
 
-        TextButton backButton = new TextButton("Go Back", skin);
+        TextButton backButton = new TextButton(MenuTexts.GO_BACK.getText(), skin);
         backButton.addListener(new ClickListener()
         {
             @Override
@@ -259,15 +275,15 @@ public class SettingsMenuScreen implements Screen
     }
 
     private void showKeyRemapDialog(Player player) {
-        Dialog dialog = new Dialog("Remap Movement Keys", skin);
+        Dialog dialog = new Dialog(MenuTexts.REMAP_MOVEMENT_KEYS.getText(), skin);
         Table table = new Table(skin);
         table.defaults().pad(8);
 
-        Label info = new Label("Click a button, then press a new key", skin);
+        Label info = new Label(MenuTexts.REMAPPING_INSTRUCTION.getText(), skin);
         table.add(info).colspan(2).center();
         table.row();
 
-        String[] directions = {"Up", "Down", "Left", "Right"};
+        String[] directions = {MenuTexts.UP.getText(), MenuTexts.DOWN.getText(), MenuTexts.LEFT.getText(), MenuTexts.RIGHT.getText()};
         int[] currentKeys = {
             player.getMoveUpKey(),
             player.getMoveDownKey(),
@@ -288,7 +304,7 @@ public class SettingsMenuScreen implements Screen
                         @Override
                         public boolean keyDown(int keycode) {
                             if (!player.isValidMovementKey(keycode)) {
-                                buttons[index].setText(directions[index] + ": INVALID");
+                                buttons[index].setText(directions[index] + MenuTexts.INVALID_KEY.getText());
                             } else {
                                 switch (index) {
                                     case 0:
@@ -316,7 +332,7 @@ public class SettingsMenuScreen implements Screen
             table.row();
         }
 
-        TextButton doneButton = new TextButton("Done", skin);
+        TextButton doneButton = new TextButton(MenuTexts.DONE.getText(), skin);
         doneButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

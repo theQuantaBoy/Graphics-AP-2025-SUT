@@ -4,6 +4,7 @@ import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.ScoreBoardMenuController;
 import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
+import com.ap_graphics.model.enums.MenuTexts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -14,10 +15,13 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ScoreBoardMenuScreen implements Screen
@@ -54,19 +58,19 @@ public class ScoreBoardMenuScreen implements Screen
         stage.addActor(rightLeavesImage);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = TillDawn.menuFont;
+        labelStyle.font = App.getCurrentPlayer().getFont();
 
         TextButton.TextButtonStyle buttonStyle = skin.get(TextButton.TextButtonStyle.class);
-        buttonStyle.font = TillDawn.menuFont;
+        buttonStyle.font = App.getCurrentPlayer().getFont();
 
         Table table = new Table();
         table.setFillParent(true);
 
-        usernameBtn = new TextButton("username", buttonStyle);
-        scoreBtn = new TextButton("score", buttonStyle);
-        timeBtn = new TextButton("game time", buttonStyle);
-        killBtn = new TextButton("kill count", buttonStyle);
-        goBackBtn = new TextButton("Go Back", buttonStyle);
+        usernameBtn = new TextButton(MenuTexts.USERNAME.getText(), buttonStyle);
+        scoreBtn = new TextButton(MenuTexts.SCORE_HEADER.getText(), buttonStyle);
+        timeBtn = new TextButton(MenuTexts.GAME_TIME.getText(), buttonStyle);
+        killBtn = new TextButton(MenuTexts.KILL_COUNT.getText(), buttonStyle);
+        goBackBtn = new TextButton(MenuTexts.GO_BACK.getText(), buttonStyle);
 
         float basePadding = 40f;
         float colWidth;
@@ -168,10 +172,10 @@ public class ScoreBoardMenuScreen implements Screen
 
     private void updateButtonLabels()
     {
-        usernameBtn.setText("username");
-        scoreBtn.setText("score");
-        timeBtn.setText("game time");
-        killBtn.setText("kill count");
+        usernameBtn.setText(MenuTexts.USERNAME.getText());
+        scoreBtn.setText(MenuTexts.SCORE_HEADER.getText());
+        timeBtn.setText(MenuTexts.GAME_TIME.getText());
+        killBtn.setText(MenuTexts.KILL_COUNT.getText());
     }
 
     private void populateRows(float colWidth, Label.LabelStyle baseStyle)

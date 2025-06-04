@@ -3,6 +3,7 @@ package com.ap_graphics.view;
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.model.App;
 import com.ap_graphics.model.Player;
+import com.ap_graphics.model.enums.MenuTexts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -28,87 +29,57 @@ public class HintMenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = TillDawn.menuFont;
+        labelStyle.font = App.getCurrentPlayer().getFont();
 
         TextButton.TextButtonStyle buttonStyle = skin.get(TextButton.TextButtonStyle.class);
-        buttonStyle.font = TillDawn.menuFont;
+        buttonStyle.font = App.getCurrentPlayer().getFont();
 
         Table root = new Table();
         root.setFillParent(true);
         root.padTop(100).padLeft(60).padRight(60);
         stage.addActor(root);
 
-        Label titleLabel = new Label("Hint Menu", labelStyle);
+        Label titleLabel = new Label(MenuTexts.HINT_MENU.getText(), labelStyle);
         titleLabel.setFontScale(2f);
         titleLabel.setColor(Color.SKY);
         root.add(titleLabel).colspan(4).center().padBottom(70).row();
 
         Player player = App.getCurrentPlayer();
 
-        Table heroGuideTable = createSection("Hero Guide", labelStyle,
-            "Shana",
-            "  hp: 4",
-            "  speed: 4",
-            " ",
-            "Diamond",
-            "  hp: 7",
-            "  speed: 1",
-            " ",
-            "Scarlet",
-            "  hp: 3",
-            "  speed: 5",
-            " ",
-            "Lilith",
-            "  hp: 5",
-            "  speed: 3",
-            " ",
-            "Dasher",
-            "  hp: 2",
-            "  speed: 10");
+        Table heroGuideTable = createSection(MenuTexts.HERO_GUIDE.getText(), labelStyle,
+            MenuTexts.SHANA.getText(), "  " + MenuTexts.HP.getText() + ": 4", "  " + MenuTexts.SPEED.getText() + ": 4", " ",
+            MenuTexts.DIAMOND.getText(), "  " + MenuTexts.HP.getText() + ": 7", "  " + MenuTexts.SPEED.getText() + ": 1", " ",
+            MenuTexts.SCARLET.getText(), "  " + MenuTexts.HP.getText() + ": 3", "  " + MenuTexts.SPEED.getText() + ": 5", " ",
+            MenuTexts.LILITH.getText(), "  " + MenuTexts.HP.getText() + ": 5", "  " + MenuTexts.SPEED.getText() + ": 3", " ",
+            MenuTexts.DASHER.getText(), "  " + MenuTexts.HP.getText() + ": 2", "  " + MenuTexts.SPEED.getText() + ": 10"
+        );
 
-        Table keyGuideTable = createSection("Game Keys", labelStyle,
-            "Up: " + keyName(player.getMoveUpKey()),
-            " ",
-            "Left: " + keyName(player.getMoveLeftKey()),
-            " ",
-            "Down: " + keyName(player.getMoveDownKey()),
-            " ",
-            "Right: " + keyName(player.getMoveRightKey()));
+        Table keyGuideTable = createSection(MenuTexts.GAME_KEYS.getText(), labelStyle,
+            MenuTexts.UP.getText() + ": " + keyName(player.getMoveUpKey()), " ",
+            MenuTexts.LEFT.getText() + ": " + keyName(player.getMoveLeftKey()), " ",
+            MenuTexts.DOWN.getText() + ": " + keyName(player.getMoveDownKey()), " ",
+            MenuTexts.RIGHT.getText() + ": " + keyName(player.getMoveRightKey())
+        );
 
-        Table cheatCodeTable = createSection("Cheat Codes", labelStyle,
-            "T: advance time 1 minute",
-            " ",
-            "L: levels up hero",
-            " ",
-            "H: increases your hp",
-            " ",
-            "B: takes you to boss fight",
-            " ",
-            "K: kills all current enemies",
-            " ",
-            "P: pause menu",
-            " ",
-            "F: instantly closes the game",
-            " ",
-            "C: triggers auto aim",
-            " ",
-            "M: triggers auto reload");
+        Table cheatCodeTable = createSection(MenuTexts.CHEAT_CODES.getText(), labelStyle,
+            MenuTexts.ADVANCE_TIME.getText(), " ",
+            MenuTexts.LEVEL_UP.getText(), " ",
+            MenuTexts.INCREASE_HP.getText(), " ",
+            MenuTexts.BOSS_FIGHT.getText(), " ",
+            MenuTexts.KILL_ALL.getText(), " ",
+            MenuTexts.PAUSE_MENU.getText(), " ",
+            MenuTexts.INSTANT_EXIT.getText(), " ",
+            MenuTexts.AUTO_AIM.getText(), " ",
+            MenuTexts.AUTO_RELOAD.getText()
+        );
 
-        Table abilityTable = createSection("Abilities", labelStyle,
-            "Increase HP",
-            "  +1 Max HP",
-            " ",
-            "Increase Damage",
-            "  +25% Weapon Damage for 10s",
-            " ",
-            "Increase Projectiles",
-            "  +1 Projectile",
-            " ",
-            "Increase Ammo Capacity",
-            "  +5 Max Ammo",
-            " ",
-            "Increase Speed",
-            "  2x Move Speed for 10s");
+        Table abilityTable = createSection(MenuTexts.ABILITIES.getText(), labelStyle,
+            MenuTexts.INCREASE_HP_AB.getText(), "  " + MenuTexts.HP_EFFECT.getText(), " ",
+            MenuTexts.INCREASE_DMG.getText(), "  " + MenuTexts.DMG_EFFECT.getText(), " ",
+            MenuTexts.INCREASE_PROJECTILES.getText(), "  " + MenuTexts.PROJECTILES_EFFECT.getText(), " ",
+            MenuTexts.INCREASE_AMMO.getText(), "  " + MenuTexts.AMMO_EFFECT.getText(), " ",
+            MenuTexts.INCREASE_SPEED.getText(), "  " + MenuTexts.SPEED_EFFECT.getText()
+        );
 
         root.defaults().padLeft(20).padRight(20).top();
         root.add(heroGuideTable).expand().padRight(10);
@@ -117,7 +88,7 @@ public class HintMenuScreen implements Screen {
         root.add(abilityTable).expand().padLeft(10);
         root.row();
 
-        TextButton backButton = new TextButton("Go Back", buttonStyle);
+        TextButton backButton = new TextButton(MenuTexts.GO_BACK.getText(), buttonStyle);
         backButton.addListener(new ClickListener()
         {
             public void clicked(InputEvent event, float x, float y)

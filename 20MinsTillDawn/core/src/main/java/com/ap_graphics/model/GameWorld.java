@@ -39,7 +39,6 @@ public class GameWorld
     private final float gameTime;
 
     private final Player player;
-    private final List<WorldObject> obstacles = new ArrayList<>();
 
     private List<Enemy> enemies = new ArrayList<>();
 
@@ -178,7 +177,6 @@ public class GameWorld
 
     public void render(SpriteBatch batch, float delta)
     {
-        obstacles.forEach(o -> o.render(batch, delta));
         enemies.forEach(e -> e.render(batch, delta));
         player.getPlayerSprite().draw(batch);
     }

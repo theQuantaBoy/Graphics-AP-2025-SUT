@@ -9,6 +9,7 @@ import com.ap_graphics.model.combat.Enemy;
 import com.ap_graphics.model.combat.EnemyBullet;
 import com.ap_graphics.model.combat.XpOrb;
 import com.ap_graphics.model.enums.Avatar;
+import com.ap_graphics.model.enums.MenuTexts;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -71,24 +72,34 @@ public class GameMenuScreen implements Screen
 
         GameWorld.getInstance().setUIContext(stage, skin);
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/ChevyRay.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 20; // Set the desired size
-        parameter.color = Color.WHITE;
-        BitmapFont customFont = generator.generateFont(parameter);
-        generator.dispose(); // Dispose when done
+        BitmapFont customFont = player.getFont();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = customFont;
 
         timerLabel = new Label("", labelStyle);
+        timerLabel.setFontScale(0.65f);
+
         ammoLabel = new Label("", labelStyle);
+        ammoLabel.setFontScale(0.65f);
+
         killLabel = new Label("", labelStyle);
+        killLabel.setFontScale(0.65f);
+
         xpLabel = new Label("", labelStyle);
+        xpLabel.setFontScale(0.65f);
+
         levelLabel = new Label("", labelStyle);
+        levelLabel.setFontScale(0.65f);
+
         hpLabel = new Label("", labelStyle);
+        hpLabel.setFontScale(0.65f);
+
         autoAimLabel = new Label("", labelStyle);
+        autoAimLabel.setFontScale(0.65f);
+
         autoReloadLabel = new Label("", labelStyle);
+        autoReloadLabel.setFontScale(0.65f);
 
         Table uiTable = new Table();
         uiTable.top().left();
@@ -166,20 +177,25 @@ public class GameMenuScreen implements Screen
         int remaining = gameWorld.getRemainingTime();
         int minutes = remaining / 60;
         int seconds = remaining % 60;
-        timerLabel.setText("Time: " + String.format("%02d:%02d", minutes, seconds));
+        timerLabel.setText(MenuTexts.TIMER.getText() + ": " + String.format("%02d:%02d", minutes, seconds));
 
         if (player.getCurrentWeapon() != null) {
             int currentAmmo = player.getCurrentWeapon().getCurrentAmmo();
             int maxAmmo = player.getCurrentWeapon().getMaxAmmo();
-            ammoLabel.setText("Ammo: " + currentAmmo + " / " + maxAmmo);
+            ammoLabel.setText(MenuTexts.AMMO.getText() + ": " + currentAmmo + " / " + maxAmmo);
         }
 
-        killLabel.setText("Kill Count: " + gameWorld.getKillCount());
-        xpLabel.setText("XP: " + player.getXp());
-        levelLabel.setText("Level: " + player.getLevel());
-        hpLabel.setText("HP: " + player.getCurrentHP() + " / " + player.getMaxHP());
-        autoAimLabel.setText("Auto Aim: " + (gameWorld.isAutoAimOn() ? "On" : "Off"));
-        autoReloadLabel.setText("Auto Reload: " + (player.isAutoReloadEnabled() ? "On" : "Off"));
+        killLabel.setText(MenuTexts.KILL_COUNT_GAME.getText() + ": " + gameWorld.getKillCount());
+        xpLabel.setText(MenuTexts.XP.getText() + ": " + player.getXp());
+        levelLabel.setText(MenuTexts.LEVEL.getText() + ": " + player.getLevel());
+        hpLabel.setText(MenuTexts.HP_GAME.getText() + ": " + player.getCurrentHP() + " / " + player.getMaxHP());
+
+        autoAimLabel.setText(MenuTexts.AUTO_AIM_GAME.getText() + ": " +
+            (gameWorld.isAutoAimOn() ? MenuTexts.ON.getText() : MenuTexts.OFF.getText()));
+
+        autoReloadLabel.setText(MenuTexts.AUTO_RELOAD_GAME.getText() + ": " +
+            (player.isAutoReloadEnabled() ? MenuTexts.ON.getText() : MenuTexts.OFF.getText()));
+
 
         Vector3 mouseScreenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         Vector3 mouseWorldPos = camera.unproject(mouseScreenPos);

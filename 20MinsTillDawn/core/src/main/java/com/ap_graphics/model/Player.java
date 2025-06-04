@@ -1,11 +1,13 @@
 package com.ap_graphics.model;
 
+import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.combat.Weapon;
 import com.ap_graphics.model.enums.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -72,6 +74,8 @@ public class Player
     private int moveDownKey = Input.Keys.S;
     private int moveLeftKey = Input.Keys.A;
     private int moveRightKey = Input.Keys.D;
+
+    private boolean lovesJapan = false;
 
     public Player(String username, String password, SecurityQuestionOptions answer)
     {
@@ -599,5 +603,20 @@ public class Player
     public boolean equals(Player player)
     {
         return player.getUsername().equals(getUsername());
+    }
+
+    public void changeLanguage()
+    {
+        lovesJapan = !lovesJapan;
+    }
+
+    public boolean lovesJapan()
+    {
+        return lovesJapan;
+    }
+
+    public BitmapFont getFont()
+    {
+        return lovesJapan ? TillDawn.japaneseFont : TillDawn.menuFont;
     }
 }

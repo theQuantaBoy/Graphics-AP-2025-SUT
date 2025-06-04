@@ -5,15 +5,13 @@ import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.App;
 import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.enums.AbilityType;
+import com.ap_graphics.model.enums.MenuTexts;
 import com.ap_graphics.model.enums.SoundEffectType;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
@@ -70,6 +68,18 @@ public class PauseMenuDialog extends Dialog
             }
         });
 
+
+        CheckBox.CheckBoxStyle checkboxStyle = skin.get(CheckBox.CheckBoxStyle.class);
+
+        CheckBox bwToggle = new CheckBox(MenuTexts.BW_MODE.getText(), skin);
+        bwToggle.setStyle(checkboxStyle);
+        bwToggle.setChecked(App.getCurrentPlayer().isBlackAndWhiteMode());
+        bwToggle.addListener(e ->
+        {
+            App.getCurrentPlayer().setBlackAndWhiteMode(bwToggle.isChecked());
+            return false;
+        });
+
         TextButton resumeButton = new TextButton("resume", skin);
         resumeButton.addListener(new ClickListener() {
             @Override
@@ -84,6 +94,7 @@ public class PauseMenuDialog extends Dialog
         getContentTable().add(abilitiesButton).pad(10).row();
         getContentTable().add(giveUpButton).pad(10).row();
         getContentTable().add(saveAndQuitButton).pad(10).row();
+        getContentTable().add(bwToggle).pad(10).row();
         getContentTable().add(resumeButton).pad(20).padTop(30);
         getContentTable().center();
 
