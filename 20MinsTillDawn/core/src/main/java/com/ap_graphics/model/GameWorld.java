@@ -83,6 +83,8 @@ public class GameWorld
 
     private final PlayerLightMask playerLightMask;
 
+    private int killCount = 0;
+
     public GameWorld(Player player, float w, float h, float gameTime, OrthographicCamera camera, Texture background)
     {
         instance = this;
@@ -117,6 +119,7 @@ public class GameWorld
         tentacleSpawnTimer += delta;
         eyebatSpawnTimer += delta;
         elderSpawnTimer += delta;
+        player.addToPlayTime(delta);
 
         if (shouldPause())
         {
@@ -269,6 +272,8 @@ public class GameWorld
                             xpOrbs.add(new XpOrb(enemy.getPosition().x, enemy.getPosition().y));
                             animations.add(new GameAnimation(GameAnimationType.TENTACLE_DEATH, enemy.getPosition()));
                             enemyCollisionIter.remove();
+
+                            killCount += 1;
                             player.addToKills();
                         }
                         bulletIter.remove();
@@ -572,7 +577,7 @@ public class GameWorld
 
     public int getScore()
     {
-        int score = (int) totalGameTime * player.getKillCount();
+        int score = (int) totalGameTime * killCount;
         player.addScore(score);
         return score;
     }
@@ -695,5 +700,10 @@ public class GameWorld
     public PlayerLightMask getPlayerLightMask()
     {
         return playerLightMask;
+    }
+
+    public int getKillCount()
+    {
+        return killCount;
     }
 }

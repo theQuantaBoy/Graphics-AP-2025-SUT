@@ -105,7 +105,7 @@ public class PlayerController
 
     public void handleShooting(Player player, GameWorld gameWorld, OrthographicCamera camera)
     {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE))
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
         {
             Weapon weapon = player.getCurrentWeapon();
             if (weapon != null)

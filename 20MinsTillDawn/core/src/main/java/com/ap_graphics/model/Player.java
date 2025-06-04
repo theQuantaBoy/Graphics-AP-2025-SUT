@@ -66,6 +66,7 @@ public class Player
     private ArrayList<AbilityType> abilityTypes = new ArrayList<>();
 
     private int killCount = 0;
+    private float totalPlayTime = 0;
 
     private int moveUpKey = Input.Keys.W;
     private int moveDownKey = Input.Keys.S;
@@ -573,5 +574,25 @@ public class Player
     public void setScore(int score)
     {
         this.score = score;
+    }
+
+    public void setKillCount(int killCount)
+    {
+        this.killCount = killCount;
+    }
+
+    public void setTotalPlayTime(float totalPlayTime)
+    {
+        this.totalPlayTime = totalPlayTime;
+    }
+
+    public void addToPlayTime(float delta)
+    {
+        this.totalPlayTime += delta;
+    }
+
+    public float getTotalPlayTime()
+    {
+        return totalPlayTime;
     }
 }

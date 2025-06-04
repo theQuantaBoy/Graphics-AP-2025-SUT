@@ -148,7 +148,7 @@ public class GameMenuScreen implements Screen
             ammoLabel.setText("Ammo: " + currentAmmo + " / " + maxAmmo);
         }
 
-        killLabel.setText("Kill Count: " + player.getKillCount());
+        killLabel.setText("Kill Count: " + gameWorld.getKillCount());
         xpLabel.setText("XP: " + player.getXp());
         levelLabel.setText("Level: " + player.getLevel());
         hpLabel.setText("HP: " + player.getCurrentHP() + " / " + player.getMaxHP());

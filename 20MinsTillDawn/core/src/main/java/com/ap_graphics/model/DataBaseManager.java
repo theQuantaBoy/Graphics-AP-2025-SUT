@@ -28,7 +28,9 @@ public class DataBaseManager {
                     "playlist INTEGER," +
                     "autoReload INTEGER," +
                     "bwMode INTEGER," +
-                    "score INTEGER" +
+                    "score INTEGER," +
+                    "killCount INTEGER," +
+                    "playTime REAL" +
                     ");";
 
             stmt.execute(sql);
@@ -42,8 +44,8 @@ public class DataBaseManager {
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
             String insertSQL =
                 "INSERT OR REPLACE INTO players " +
-                    "(username, password, answer, avatar, moveUp, moveDown, moveLeft, moveRight, musicVolume, sfxEnabled, playlist, autoReload, bwMode, score) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "(username, password, answer, avatar, moveUp, moveDown, moveLeft, moveRight, musicVolume, sfxEnabled, playlist, autoReload, bwMode, score, killCount, playTime) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement pstmt = conn.prepareStatement(insertSQL);
 
@@ -62,6 +64,8 @@ public class DataBaseManager {
                 pstmt.setBoolean(12, p.isAutoReloadEnabled());
                 pstmt.setBoolean(13, p.isBlackAndWhiteMode());
                 pstmt.setInt(14, p.getScore());
+                pstmt.setInt(15, p.getKillCount());
+                pstmt.setFloat(16, p.getTotalPlayTime());
                 pstmt.executeUpdate();
             }
 
@@ -93,6 +97,8 @@ public class DataBaseManager {
                 p.setAutoReloadEnabled(rs.getBoolean("autoReload"));
                 p.setBlackAndWhiteMode(rs.getBoolean("bwMode"));
                 p.setScore(rs.getInt("score"));
+                p.setKillCount(rs.getInt("killCount"));
+                p.setTotalPlayTime(rs.getFloat("playTime"));
 
                 players.add(p);
             }
