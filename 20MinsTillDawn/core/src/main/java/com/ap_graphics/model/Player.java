@@ -595,4 +595,9 @@ public class Player
     {
         return totalPlayTime;
     }
+
+    public boolean equals(Player player)
+    {
+        return player.getUsername().equals(getUsername());
+    }
 }

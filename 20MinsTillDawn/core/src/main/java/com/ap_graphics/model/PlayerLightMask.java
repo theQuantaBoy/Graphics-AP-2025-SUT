@@ -33,7 +33,7 @@ public class PlayerLightMask
         float y = playerPos.y;
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(0, 0, 0, 0.75f);
+        shapeRenderer.setColor(0, 0, 0, 0.50f);
 
         // TOP
         shapeRenderer.rect(camX, y + radius, worldWidth, camY + worldHeight - (y + radius));
