@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -44,8 +45,9 @@ public class GameMenuScreen implements Screen
 
     private CursorManager cursorManager;
 
-    BitmapFont font;
     private ShapeRenderer shapeRenderer;
+
+    private ShaderProgram grayscaleShader;
 
     public GameMenuScreen(Skin skin)
     {
@@ -113,6 +115,17 @@ public class GameMenuScreen implements Screen
 
     @Override
     public void show() {
+        ShaderProgram.pedantic = false;
+        grayscaleShader = new ShaderProgram(
+            Gdx.files.internal("shaders/default.vert"),
+            Gdx.files.internal("shaders/grayscale.frag")
+        );
+
+        if (!grayscaleShader.isCompiled())
+        {
+            System.err.println("Shader compile error: " + grayscaleShader.getLog());
+        }
+
         Gdx.input.setInputProcessor(stage);
 
         Player player = App.getCurrentPlayer();
@@ -126,12 +139,25 @@ public class GameMenuScreen implements Screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        if (player.isBlackAndWhiteMode())
+            stage.getBatch().setShader(grayscaleShader);
+        else
+            stage.getBatch().setShader(null); // Use default
+
         camera.position.set(player.getPosX(), player.getPosY(), 0);
         camera.update();
 
         batch.setProjectionMatrix(camera.combined);
 
         gameWorld.update(delta);
+
+        if (player.isBlackAndWhiteMode()) {
+            batch.setShader(grayscaleShader);
+            stage.getBatch().setShader(grayscaleShader);
+        } else {
+            batch.setShader(null);
+            stage.getBatch().setShader(null);
+        }
 
         batch.begin();
 
@@ -221,6 +247,11 @@ public class GameMenuScreen implements Screen
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.M))
             {
                 player.setAutoReloadEnabled(!player.isAutoReloadEnabled());
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS))
+            {
+                player.setBlackAndWhiteMode(!player.isBlackAndWhiteMode());
             }
         }
 
