@@ -3,6 +3,7 @@ package com.ap_graphics.view;
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.App;
+import com.ap_graphics.model.GameSaver;
 import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.enums.AbilityType;
 import com.ap_graphics.model.enums.MenuTexts;
@@ -62,7 +63,8 @@ public class PauseMenuDialog extends Dialog
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 SoundManager.getInstance().playSFX(SoundEffectType.UI_CLICK_36);
-                // TODO: Save game and quit
+                GameSaver.saveGame(App.getGame());
+                TillDawn.getGame().setScreen(new MainMenuScreen());
                 TillDawn.getGame().setScreen(new MainMenuScreen());
                 remove();
             }

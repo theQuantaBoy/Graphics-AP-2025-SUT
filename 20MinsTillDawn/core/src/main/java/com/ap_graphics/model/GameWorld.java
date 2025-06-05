@@ -59,7 +59,6 @@ public class GameWorld
     private BitmapFont xpFont;
 
     List<GameAnimation> animations = new ArrayList<>();
-    GameAnimation reloadAnimation = null;
 
     private boolean paused = false;
 
@@ -94,7 +93,7 @@ public class GameWorld
         this.camera = camera;
         this.background = background;
 
-        playerLightMask = new PlayerLightMask(180f); // adjust for visible radius
+        playerLightMask = new PlayerLightMask(180f);
 
         spawnTrees(10);
 
@@ -703,5 +702,15 @@ public class GameWorld
     public int getKillCount()
     {
         return killCount;
+    }
+
+    public void setTotalGameTime(float totalGameTime)
+    {
+        this.totalGameTime = totalGameTime;
+    }
+
+    public float getGameTime()
+    {
+        return gameTime;
     }
 }

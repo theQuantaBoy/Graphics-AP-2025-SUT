@@ -105,4 +105,19 @@ public abstract class Enemy extends AbstractAnimatedEntity
         isDying = true;
         deathStateTime = 0;
     }
+
+    public EnemyType getType()
+    {
+        return type;
+    }
+
+    public int getHp()
+    {
+        return hp;
+    }
+
+    public void setHp(int hp)
+    {
+        this.hp = hp;
+    }
 }

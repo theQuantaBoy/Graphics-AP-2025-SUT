@@ -67,7 +67,15 @@ public class GameMenuScreen implements Screen
 
         shapeRenderer = new ShapeRenderer();
 
-        this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight(), player.getCurrentGameDuration() * 60, camera, background);
+        if (App.useSavedGame)
+        {
+            this.gameWorld = GameSaver.loadGame();
+            App.useSavedGame = false;
+        } else
+        {
+            this.gameWorld = new GameWorld(player, background.getWidth(), background.getHeight(), player.getCurrentGameDuration() * 60, camera, background);
+        }
+
         App.setGame(gameWorld);
 
         GameWorld.getInstance().setUIContext(stage, skin);

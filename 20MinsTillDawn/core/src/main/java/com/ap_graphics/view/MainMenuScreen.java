@@ -2,6 +2,7 @@ package com.ap_graphics.view;
 
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.model.App;
+import com.ap_graphics.model.GameSaver;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.MenuTexts;
 import com.badlogic.gdx.Gdx;
@@ -104,7 +105,11 @@ public class MainMenuScreen implements Screen
             @Override
             public void clicked(InputEvent event, float x, float y)
             {
-
+                if (GameSaver.saveExists(player.getUsername()))
+                {
+                    App.useSavedGame = true;
+                    app.setScreen(new GameMenuScreen(skin));
+                }
             }
         });
 

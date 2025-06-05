@@ -9,6 +9,7 @@ public class App
     private static GameWorld game;
 
     private static boolean isPlayingAsGuest = false;
+    public static boolean useSavedGame = false;
 
     public static Player findPlayer(String username)
     {

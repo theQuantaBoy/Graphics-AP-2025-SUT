@@ -619,4 +619,30 @@ public class Player
     {
         return lovesJapan ? TillDawn.japaneseFont : TillDawn.menuFont;
     }
+
+    public void setHp(int hp)
+    {
+        this.hp = hp;
+    }
+
+    public void setXp(int xp)
+    {
+        this.xp = xp;
+    }
+
+    public void setLevel(int level)
+    {
+        this.level = level;
+    }
+
+    public void setPosition(float x, float y)
+    {
+        height = y;
+        width = x;
+    }
+
+    public void resetHP()
+    {
+        this.hp = avatar.getHp() * 10;
+    }
 }

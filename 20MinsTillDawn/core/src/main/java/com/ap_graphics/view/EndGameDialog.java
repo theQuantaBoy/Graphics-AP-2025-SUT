@@ -3,6 +3,8 @@ package com.ap_graphics.view;
 import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.App;
+import com.ap_graphics.model.GameSaver;
+import com.ap_graphics.model.GameWorld;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.SoundEffectType;
 import com.badlogic.gdx.graphics.Texture;
@@ -59,6 +61,12 @@ public class EndGameDialog extends Dialog
             public void clicked(InputEvent event, float x, float y)
             {
                 SoundManager.getInstance().playSFX(SoundEffectType.UI_CLICK_36);
+
+                if (GameSaver.saveExists(player.getUsername()))
+                {
+                    GameSaver.deleteSave(player.getUsername());
+                }
+
                 App.setGame(null);
 
                 if (App.isPlayingAsGuest())
