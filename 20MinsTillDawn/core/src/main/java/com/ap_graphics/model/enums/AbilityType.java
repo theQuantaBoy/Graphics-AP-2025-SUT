@@ -13,18 +13,18 @@ public enum AbilityType
     AMOCREASE("Increase Ammo Capacity", "+5 Max Ammo"),
     SPEEDY("Increase Speed", "2x Move Speed for 10s");
 
-    private final String faName;
+    private final String name;
     private final String effectText;
 
     AbilityType(String faName, String effectText)
     {
-        this.faName = faName;
+        this.name = faName;
         this.effectText = effectText;
     }
 
-    public String getFaName()
+    public String getName()
     {
-        return faName;
+        return name;
     }
 
     public String getEffectText()

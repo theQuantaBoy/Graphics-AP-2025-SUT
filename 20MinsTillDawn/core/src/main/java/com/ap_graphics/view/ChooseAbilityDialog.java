@@ -14,7 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-public class ChooseAbilityDialog extends Window {
+public class ChooseAbilityDialog extends Window
+{
     private final AbilityType[] abilities;
     private final Animation<TextureRegion> chestAnimation = GameAnimationType.BIG_CHEST.createAnimation();
     private float stateTime = 0f;
@@ -24,7 +25,8 @@ public class ChooseAbilityDialog extends Window {
     private boolean opened = false;
     private boolean abilityChosen = false;
 
-    public ChooseAbilityDialog(Stage stage, Skin skin, AbilityType[] abilities) {
+    public ChooseAbilityDialog(Stage stage, Skin skin, AbilityType[] abilities)
+    {
         super("", skin);
         this.abilities = abilities;
         this.skin = skin;
@@ -66,7 +68,7 @@ public class ChooseAbilityDialog extends Window {
         for (int i = 0; i < 3; i++) {
             final AbilityType ability = abilities[i];
             Table abilityTable = new Table(skin);
-            Label nameLabel = new Label(ability.getFaName(), skin);
+            Label nameLabel = new Label(ability.getName(), skin);
             Label effectLabel = new Label(ability.getEffectText(), skin);
             effectLabel.setWrap(true);
             effectLabel.setAlignment(1); // center

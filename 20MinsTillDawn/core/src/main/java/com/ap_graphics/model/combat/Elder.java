@@ -1,7 +1,9 @@
 package com.ap_graphics.model.combat;
 
+import com.ap_graphics.controller.SoundManager;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.EnemyType;
+import com.ap_graphics.model.enums.SoundEffectType;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Elder extends Enemy
@@ -32,12 +34,30 @@ public class Elder extends Enemy
 
         if (lastDash >= dashCooldown)
         {
-            float originalSpeed = speed;
-            float dashMultiplier = 4f;
-            speed = originalSpeed * dashMultiplier;
-            moveTowardPlayer(delta, player);
-            speed = originalSpeed;
+            dash(delta, player);
+            SoundManager.getInstance().playSFX(SoundEffectType.STANDARD_WEAPON_WHOOSH_01);
             lastDash = 0f;
+        }
+    }
+
+    public void dash(float delta, Player player)
+    {
+        if (player == null) return;
+
+        float dx = - position.x + player.getPosX();
+        float dy = - position.y + player.getPosY();
+
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 1e-3)
+        {
+            float normX = dx / distance;
+            float normY = dy / distance;
+
+            float knockbackSpeed = speed * 90f;
+
+            position.x += normX * knockbackSpeed * delta;
+            position.y += normY * knockbackSpeed * delta;
         }
     }
 }

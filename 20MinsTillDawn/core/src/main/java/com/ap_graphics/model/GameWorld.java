@@ -132,8 +132,17 @@ public class GameWorld
 
         totalGameTime += delta;
         tentacleSpawnTimer += delta;
-        eyebatSpawnTimer += delta;
-        elderSpawnTimer += delta;
+
+        if (totalGameTime >= (gameTime / 4f))
+        {
+            eyebatSpawnTimer += delta;
+        }
+
+        if (totalGameTime >= (gameTime / 2f))
+        {
+            elderSpawnTimer += delta;
+        }
+
         player.addToPlayTime(delta);
 
         if (shouldPause())
@@ -169,7 +178,7 @@ public class GameWorld
             levelUpAnimationOver = false;
         }
 
-        spawnEnemies(delta);
+        spawnEnemies();
         checkCollisions(delta);
         checkEnemyBulletCollisions(delta);
         checkEnemyCollisions(delta);
@@ -234,12 +243,15 @@ public class GameWorld
         {
             enemies.add(new TentacleMonster(EnemyType.TENTACLE_2, spawn.x, spawn.y));
         }
+
+        tentacleSpawnTimer = 0f;
     }
 
     public void spawnEyebat()
     {
         Vector2 spawn = getRandomSpawnPositionOutsideCamera();
         enemies.add(new Eyebat(spawn.x, spawn.y));
+        eyebatSpawnTimer = 0f;
     }
 
     public float getTotalGameTime()
@@ -333,10 +345,10 @@ public class GameWorld
         {
             if (e.getBounds().overlaps(player.getBounds()))
             {
-                if (player.takeDamage(2))
+                if (player.takeDamage(1))
                 {
                     SoundManager.getInstance().playSFX(SoundEffectType.DEBUFF_SPEED);
-                    addFloatingText("-2", player.getPosition(), Color.RED);
+                    addFloatingText("-1", player.getPosition(), Color.RED);
                 }
             }
         }
@@ -383,31 +395,30 @@ public class GameWorld
         return xpOrbs;
     }
 
-    public void spawnEnemies(float delta)
+    public void spawnEnemies()
     {
         if (tentacleSpawnTimer >= 3f)
         {
-            for (int i = 0; i < ((delta / 30f) + 1); i++)
+            for (int i = 0; i < (totalGameTime / 60f) / 4; i++)
             {
                 spawnTentacleMonster();
             }
-            tentacleSpawnTimer = 0f;
         }
 
-        if (delta > (gameTime / 4f))
+        if (totalGameTime > (gameTime / 4f))
         {
             if (eyebatSpawnTimer >= 10f)
             {
-                for (int i = 0; i < (((4 * delta - gameTime + 30)) / 30f); i++)
+                for (int i = 0; i < (4 * ((gameTime - totalGameTime) / 60f) / 30f); i++)
                 {
                     spawnEyebat();
                 }
             }
         }
 
-        if (delta > (gameTime / 2f) - 90f)
+        if (totalGameTime > (gameTime / 2f) - 10f)
         {
-            if (!elderExists && elderSpawnTimer > 90f)
+            if (!elderExists && elderSpawnTimer > 10f)
             {
                 spawnElder();
             }
@@ -466,6 +477,8 @@ public class GameWorld
 
         elderExists = true;
         SoundManager.getInstance().playSFX(SoundEffectType.SPELL_EXPLOSION_MAGIC_02);
+
+        elderSpawnTimer = 0f;
     }
 
     private void spawnTrees(int count)
@@ -561,7 +574,7 @@ public class GameWorld
 
     public void cheatAdvanceTime()
     {
-        totalGameTime += 60;
+        totalGameTime += 60f;
     }
 
     public void killAllEnemies()
