@@ -4,6 +4,7 @@ import com.ap_graphics.TillDawn;
 import com.ap_graphics.controller.LoginMenuController;
 import com.ap_graphics.controller.RegisterMenuController;
 import com.ap_graphics.model.App;
+import com.ap_graphics.model.GameSaver;
 import com.ap_graphics.model.Player;
 import com.ap_graphics.model.enums.Avatar;
 import com.ap_graphics.model.enums.MenuTexts;
@@ -123,7 +124,20 @@ public class ProfileMenuScreen implements Screen {
 
         deleteAccount.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                showConfirmationDialog();
+               Player player = App.getCurrentPlayer();
+
+               if (GameSaver.saveExists(player.getUsername()))
+               {
+                   GameSaver.deleteSave(player.getUsername());
+               }
+
+               if (App.getPlayers().contains(player))
+               {
+                   App.getPlayers().remove(player);
+               }
+
+               App.setCurrentPlayer(null);
+               app.setScreen(new FirstMenuScreen());
             }
         });
 
@@ -370,27 +384,6 @@ public class ProfileMenuScreen implements Screen {
         Texture newTexture = new Texture(Avatar.getAvatar(index).getPortraitPath());
         avatarImage.setDrawable(new TextureRegionDrawable(new TextureRegion(newTexture)));
         avatarLabel.setText(Avatar.getAvatar(index).getName());
-    }
-
-    private void showConfirmationDialog()
-    {
-        Dialog dialog = new Dialog(MenuTexts.CONFIRM_DELETION.getText(), skin);
-        dialog.getTitleLabel().setFontScale(DIALOG_FONT_SCALE);
-
-        Label message = new Label(MenuTexts.DELETE_ACCOUNT_MSG.getText(), skin);
-        message.setFontScale(DIALOG_FONT_SCALE);
-        dialog.text(message);
-
-        TextButton yesBtn = new TextButton(MenuTexts.YES.getText(), skin);
-        TextButton noBtn = new TextButton(MenuTexts.NO.getText(), skin);
-
-        yesBtn.getLabel().setFontScale(DIALOG_FONT_SCALE);
-        noBtn.getLabel().setFontScale(DIALOG_FONT_SCALE);
-
-        dialog.button(yesBtn, true);
-        dialog.button(noBtn, false);
-
-        dialog.show(stage);
     }
 
     @Override public void render(float delta)

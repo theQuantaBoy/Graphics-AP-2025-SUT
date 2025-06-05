@@ -95,7 +95,7 @@ public class GameWorld
 
         playerLightMask = new PlayerLightMask(180f);
 
-        spawnTrees(10);
+        spawnTrees(30);
 
         xpFont = new BitmapFont();
         xpFont.getData().setScale(1.5f);
@@ -103,6 +103,23 @@ public class GameWorld
         player.resetGameData();
     }
 
+    public GameWorld(float w, float h, Player player, float gameTime, OrthographicCamera camera, Texture background)
+    {
+        instance = this;
+        this.player = player;
+        this.worldWidth = w;
+        this.worldHeight = h;
+        this.gameTime = gameTime;
+        this.camera = camera;
+        this.background = background;
+
+        playerLightMask = new PlayerLightMask(180f);
+
+        xpFont = new BitmapFont();
+        xpFont.getData().setScale(1.5f);
+
+        player.resetGameData();
+    }
     public void setUIContext(Stage stage, Skin skin)
     {
         this.uiStage = stage;

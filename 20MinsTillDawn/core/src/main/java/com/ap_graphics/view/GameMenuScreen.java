@@ -69,7 +69,7 @@ public class GameMenuScreen implements Screen
 
         if (App.useSavedGame)
         {
-            this.gameWorld = GameSaver.loadGame();
+            this.gameWorld = GameSaver.loadGame(camera);
             App.useSavedGame = false;
         } else
         {

@@ -1,9 +1,6 @@
 package com.ap_graphics.model;
 
-import com.ap_graphics.model.combat.Enemy;
-import com.ap_graphics.model.combat.Eyebat;
-import com.ap_graphics.model.combat.TentacleMonster;
-import com.ap_graphics.model.combat.Weapon;
+import com.ap_graphics.model.combat.*;
 import com.ap_graphics.model.enums.EnemyType;
 import com.ap_graphics.model.enums.WeaponType;
 import com.badlogic.gdx.Gdx;
@@ -56,7 +53,7 @@ public class GameSaver
         file.writeString(json.prettyPrint(data), false);
     }
 
-    public static GameWorld loadGame()
+    public static GameWorld loadGame(OrthographicCamera camera)
     {
         String username = App.getCurrentPlayer().getUsername();
         FileHandle file = new FileHandle(SAVE_DIR + username + ".json");
@@ -70,11 +67,7 @@ public class GameSaver
 
         Texture background = new Texture("images/essential/background.png");
 
-        OrthographicCamera camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.zoom = 0.5f;
-
-        GameWorld world = new GameWorld(p, background.getWidth(), background.getHeight(), data.gameTime, camera, background);
+        GameWorld world = new GameWorld(background.getWidth(), background.getHeight(),p,  data.gameTime, camera, background);
         world.setTotalGameTime(data.elapsedTime);
 
         p.setPosition(data.player.x, data.player.y);
@@ -99,6 +92,9 @@ public class GameSaver
                 } else if (type == EnemyType.EYE_BAT)
                 {
                     e = new Eyebat(ed.x, ed.y);
+                } else if (type == EnemyType.TREE)
+                {
+                    e = new Tree(ed.x, ed.y);
                 }
 
                 if (e != null)
